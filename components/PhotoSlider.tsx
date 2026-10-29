@@ -6,7 +6,7 @@ export const SLIDES = [
   { src: "/photos/p1.jpg", label: "Kabaddi on a village ground" },
   { src: "/photos/p2.jpg", label: "Kho-kho practice" },
   { src: "/photos/p3.jpg", label: "A game after the monsoon rain" },
-  { src: "/photos/p4.jpg", label: "Volleyball with a bamboo post" },
+  { src: "/photos/p4.jpg", label: "Football with a bamboo goalpost" },
   { src: "/photos/p5.jpg", label: "Volleyball at golden hour" },
   { src: "/photos/p6.jpg", label: "Evening run on the court" },
 ];
