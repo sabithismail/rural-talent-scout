@@ -14,6 +14,9 @@ export default function Login() {
   const { t } = useI18n();
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("login");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mode") === "signup") setMode("signup");
+  }, []);
   const [role, setRole] = useState<"player" | "scout">("player");
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");

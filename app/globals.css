@@ -336,3 +336,13 @@ h1, h2, .splash-word { -webkit-text-stroke: 0.02em currentColor; paint-order: st
 .kicker { font-weight: 700; }
 h1, h2, .splash-word, .intro-hero h1 { -webkit-text-stroke: 0; letter-spacing: 0.02em; }
 .intro-hero h1 { line-height: 0.95; }
+
+/* intro top bar: logo left, links right */
+.intro-top { justify-content: space-between; }
+.intro-logo { display: flex; align-items: center; gap: 10px; }
+.intro-links { display: flex; align-items: center; gap: 22px; }
+.intro-links a { font-family: var(--label); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.72rem; font-weight: 700; color: var(--plum); text-decoration: none; }
+.intro-links a:hover { opacity: 0.6; }
+.intro-links a.pill { padding: 9px 18px; border-radius: 999px; background: var(--plum); color: #fff; }
+.intro-links a.pill:hover { opacity: 0.9; }
+@media (max-width: 760px) { .intro-logo span { display: none; } .intro-links { gap: 14px; } }

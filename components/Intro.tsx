@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import Logo from "./Logo";
@@ -13,6 +14,13 @@ export default function Intro() {
     try { if (sessionStorage.getItem("intro") === "1") setPhase("gone"); } catch {}
   }, []);
 
+  /** Leaving the intro for another page (About, Login): mark it as seen so it does not cover that page. */
+  function skip() {
+    setPhase("gone");
+    try { sessionStorage.setItem("intro", "1"); } catch {}
+    document.documentElement.classList.add("intro-seen");
+  }
+
   function open() {
     setPhase("leave");
     setTimeout(() => {
@@ -26,7 +34,14 @@ export default function Intro() {
   if (phase === "gone") return null;
   return (
     <section className={`intro ${phase === "leave" ? "leaving" : ""}`} aria-label={t("whatTitle")}>
-      <div className="intro-top"><Logo size={30} /> <span>Rural Talent Scout</span></div>
+      <div className="intro-top">
+        <div className="intro-logo"><Logo size={30} /> <span>Rural Talent Scout</span></div>
+        <nav className="intro-links" aria-label="Main">
+          <Link href="/about" onClick={skip}>{t("about")}</Link>
+          <Link href="/login?mode=signup" onClick={skip}>{t("signup")}</Link>
+          <Link href="/login" onClick={skip} className="pill">{t("login")}</Link>
+        </nav>
+      </div>
       <div className="intro-inner">
         <div className="intro-hero">
           <p className="kicker"><span className="rule" />{t("whatTitle")}</p>
