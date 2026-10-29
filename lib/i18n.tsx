@@ -1,4 +1,5 @@
 "use client";
+import { extra, categories, sportNamesExtra } from "./i18n-extra";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export type Lang = "en" | "hi" | "kn";
@@ -143,8 +144,8 @@ const sportNames: Record<string, Record<Lang, string>> = {
   kabaddi: { en: "Kabaddi", hi: "कबड्डी", kn: "ಕಬಡ್ಡಿ" },
 };
 
-type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string; sport: (slug: string, fallback: string) => string };
-const I18nContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (k) => k, sport: (_s, f) => f });
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string; sport: (slug: string, fallback: string) => string; cat: (name: string) => string };
+const I18nContext = createContext<Ctx>({ lang: "en", setLang: () => {}, t: (k) => k, sport: (_s, f) => f, cat: (c) => c });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
@@ -159,9 +160,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem("lang", l); } catch {}
     document.documentElement.lang = l;
   };
-  const t = (k: string) => dict[k]?.[lang] ?? dict[k]?.en ?? k;
-  const sport = (slug: string, fallback: string) => sportNames[slug]?.[lang] ?? fallback;
-  return <I18nContext.Provider value={{ lang, setLang, t, sport }}>{children}</I18nContext.Provider>;
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
+  const t = (k: string) => extra[k]?.[lang] ?? dict[k]?.[lang] ?? dict[k]?.en ?? extra[k]?.en ?? k;
+  const sport = (slug: string, fallback: string) => sportNamesExtra[slug]?.[lang] ?? sportNames[slug]?.[lang] ?? fallback;
+  const cat = (name: string) => categories[name]?.[lang] ?? name;
+  return <I18nContext.Provider value={{ lang, setLang, t, sport, cat }}>{children}</I18nContext.Provider>;
 }
 
 export const useI18n = () => useContext(I18nContext);

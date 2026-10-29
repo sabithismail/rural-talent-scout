@@ -98,7 +98,7 @@ export default function ScoutDashboard() {
               </div>
               {videoUrl[r.id]
                 ? <video src={videoUrl[r.id]} controls playsInline style={{ marginTop: 12 }} />
-                : <p><button className="btn secondary" onClick={() => showVideo(r)}>Watch video</button></p>}
+                : <p><button className="btn secondary" onClick={() => showVideo(r)}>{t("watchVideo")}</button></p>}
             </div>
           ))}
         </>

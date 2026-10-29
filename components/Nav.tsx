@@ -30,11 +30,11 @@ export default function Nav() {
   return (
     <header className="nav topbar">
       <Link href="/" className="pill-logo" aria-label="Home"><Logo size={30} /></Link>
-      <Link href="/" className="pill-name">Rural Talent Scout</Link>
+      <Link href="/" className="pill-name">{t("appName")}</Link>
       <div className="pill-links">
         <Link href="/" className="link">{t("home")}</Link>
-        <Link href="/about#docs" className="link">Docs</Link>
-        <Link href="/about#architecture" className="link">Architecture</Link>
+        <Link href="/about#docs" className="link">{t("docs")}</Link>
+        <Link href="/about#architecture" className="link">{t("architecture")}</Link>
         <Link href="/about" className="link">{t("about")}</Link>
         {user && profile?.role === "player" && <Link href="/me" className="link">{t("mySubmissions")}</Link>}
         {user && profile?.role === "scout" && <Link href="/scout" className="link">{t("scoutDashboard")}</Link>}
@@ -44,7 +44,7 @@ export default function Nav() {
         ) : (
           <Link href="/login" className="link">{t("login")}</Link>
         )}
-        <select aria-label="Language" value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+        <select aria-label={t("languageLabel")} value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
           <option value="en">English</option>
           <option value="hi">हिन्दी</option>
           <option value="kn">ಕನ್ನಡ</option>

@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, Lang } from "@/lib/i18n";
 import Logo from "./Logo";
 import PhotoSlider from "./PhotoSlider";
 
 /** First thing visitors read: what the site is and why it exists. Slides up to reveal the sports page. */
 export default function Intro() {
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
   const [phase, setPhase] = useState<"show" | "leave" | "gone">("show");
 
   useEffect(() => {
@@ -36,19 +36,24 @@ export default function Intro() {
     <section className={`intro ${phase === "leave" ? "leaving" : ""}`} aria-label={t("whatTitle")}>
       <div className="topbar intro-top">
         <span className="pill-logo"><Logo size={30} /></span>
-        <span className="pill-name">Rural Talent Scout</span>
+        <span className="pill-name">{t("appName")}</span>
         <nav className="pill-links" aria-label="Main">
-          <Link href="/about#docs" onClick={skip}>Docs</Link>
-          <Link href="/about#architecture" onClick={skip}>Architecture</Link>
+          <Link href="/about#docs" onClick={skip}>{t("docs")}</Link>
+          <Link href="/about#architecture" onClick={skip}>{t("architecture")}</Link>
           <Link href="/about" onClick={skip}>{t("about")}</Link>
           <Link href="/login?mode=signup" onClick={skip}>{t("signup")}</Link>
           <Link href="/login" onClick={skip} className="cta">{t("login")}</Link>
+          <select aria-label={t("languageLabel")} value={lang} onChange={(e) => setLang(e.target.value as Lang)}>
+            <option value="en">English</option>
+            <option value="hi">हिन्दी</option>
+            <option value="kn">ಕನ್ನಡ</option>
+          </select>
         </nav>
       </div>
       <div className="intro-inner">
         <div className="intro-hero">
           <p className="kicker"><span className="rule" />{t("whatTitle")}</p>
-          <h1>Rural Talent Scout</h1>
+          <h1>{t("appName")}</h1>
           <p className="lede">{t("whatBody")}</p>
         </div>
 

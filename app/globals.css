@@ -35,6 +35,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
+  font-weight: 400;
   color: var(--ink);
   font-family: var(--font);
   font-size: 17px;
@@ -376,3 +377,20 @@ h1, h2, .splash-word, .intro-hero h1 { -webkit-text-stroke: 0; letter-spacing: 0
   .intro-top .pill-links a[href^="/about"] { display: none; }
   .intro-top .pill-links a[href="/about"] { display: none; }
 }
+
+/* Hindi and Kannada: Anton has no such letters, so use heavy Noto faces and drop letter-spacing/uppercase (they break Indic shaping) */
+:lang(hi) { --display: "Noto Sans Devanagari", "Noto Sans", sans-serif; --label: "Noto Sans Devanagari", "Noto Sans", sans-serif; }
+:lang(kn) { --display: "Noto Sans Kannada", "Noto Sans", sans-serif; --label: "Noto Sans Kannada", "Noto Sans", sans-serif; }
+:lang(hi) h1, :lang(hi) h2, :lang(hi) .splash-word, :lang(kn) h1, :lang(kn) h2, :lang(kn) .splash-word {
+  font-weight: 800; text-transform: none; letter-spacing: 0; line-height: 1.2;
+}
+:lang(hi) .kicker, :lang(hi) .nav a.link, :lang(hi) .nav button.link, :lang(hi) .tile .sub, :lang(hi) .chip, :lang(hi) .badge, :lang(hi) .count, :lang(hi) label, :lang(hi) .eyebrow,
+:lang(hi) .tabbar a, :lang(hi) .btn, :lang(hi) .pill-name, :lang(hi) .pill-links a, :lang(hi) .pill-links button.link, :lang(hi) .tile .label, :lang(hi) .lede, :lang(hi) .slide figcaption, :lang(hi) .splash-sub,
+:lang(kn) .kicker, :lang(kn) .nav a.link, :lang(kn) .nav button.link, :lang(kn) .tile .sub, :lang(kn) .chip, :lang(kn) .badge, :lang(kn) .count, :lang(kn) label, :lang(kn) .eyebrow,
+:lang(kn) .tabbar a, :lang(kn) .btn, :lang(kn) .pill-name, :lang(kn) .pill-links a, :lang(kn) .pill-links button.link, :lang(kn) .tile .label, :lang(kn) .lede, :lang(kn) .slide figcaption, :lang(kn) .splash-sub {
+  letter-spacing: 0; text-transform: none; font-weight: 600;
+}
+:lang(hi) .intro-hero h1, :lang(kn) .intro-hero h1 { font-size: clamp(2.6rem, 10vw, 6.5rem); line-height: 1.15; }
+.pill-links select { padding: 4px 10px; font-size: 0.8rem; }
+.pill-links a, .pill-links button.link { white-space: nowrap; }
+.pill-links a.cta { display: inline-flex; align-items: center; }

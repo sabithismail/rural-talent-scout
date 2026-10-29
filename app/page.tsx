@@ -8,7 +8,7 @@ import Tilt from "@/components/Tilt";
 import CategoryIcon from "@/components/CategoryIcon";
 
 export default function Home() {
-  const { t, sport } = useI18n();
+  const { t, sport, cat: catName } = useI18n();
   const [sports, setSports] = useState<Sport[]>([]);
   const [err, setErr] = useState("");
   const [q, setQ] = useState("");
@@ -33,7 +33,7 @@ export default function Home() {
     return sports.filter((s) => {
       if (cat !== "all" && s.category !== cat) return false;
       if (!needle) return true;
-      return [s.name, sport(s.slug, s.name), s.category, s.drill_name].some((x) => x.toLowerCase().includes(needle));
+      return [s.name, sport(s.slug, s.name), s.category, catName(s.category), s.drill_name].some((x) => x.toLowerCase().includes(needle));
     });
   }, [sports, q, cat, sport]);
 
@@ -55,13 +55,13 @@ export default function Home() {
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchPlaceholder")}
           />
-          {q && <button className="clear" onClick={() => setQ("")} aria-label="Clear search">×</button>}
+          {q && <button className="clear" onClick={() => setQ("")} aria-label={t("clearSearch")}>×</button>}
         </div>
 
         <div className="chips" role="tablist" aria-label="Categories">
           <button className={`chip ${cat === "all" ? "on" : ""}`} onClick={() => setCat("all")}>{t("allCategories")}</button>
           {categories.map((c) => (
-            <button key={c} className={`chip ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>{c}</button>
+            <button key={c} className={`chip ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>{catName(c)}</button>
           ))}
         </div>
 
@@ -77,7 +77,7 @@ export default function Home() {
                 <Tilt href={`/sport/${s.slug}`} className="tile">
                   <span className="ico"><CategoryIcon category={s.category} /></span>
                   <span className="label">{sport(s.slug, s.name)}</span>
-                  <span className="sub">{s.category}</span>
+                  <span className="sub">{catName(s.category)}</span>
                 </Tilt>
               </div>
             ))}
