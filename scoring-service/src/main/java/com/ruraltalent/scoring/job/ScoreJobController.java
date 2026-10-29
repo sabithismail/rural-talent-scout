@@ -27,9 +27,9 @@ public class ScoreJobController {
     @PostMapping("/score-pending")
     public ResponseEntity<?> scorePending(@RequestHeader(value = "X-Admin-Token", required = false) String token)
             throws Exception {
-        if (adminToken.isBlank() || !job.configured()) {
+        if (adminToken.length() < 16 || !job.configured()) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
-                    "error", "Set SUPABASE_URL, SUPABASE_SERVICE_KEY and ADMIN_TOKEN to enable this job."));
+                    "error", "Set SUPABASE_URL, SUPABASE_SERVICE_KEY and an ADMIN_TOKEN of at least 16 characters to enable this job."));
         }
         if (token == null || !MessageDigest.isEqual(
                 token.getBytes(StandardCharsets.UTF_8), adminToken.getBytes(StandardCharsets.UTF_8))) {

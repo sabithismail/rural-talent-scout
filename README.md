@@ -33,3 +33,11 @@ Scoring job: `POST /api/jobs/score-pending` with header `X-Admin-Token`; env `SU
 
 ## Login rules
 Email + 6-digit OTP, unique username (3-20 letters, numbers, underscore), password of 8+ characters with a letter and a number.
+
+## Security notes
+- **Database:** row-level security on every table, plus least-privilege grants (anonymous users can only read sports and events; players cannot write scores, status, role or verified_scout). Scouts can only watch videos of players whose parent consent is on and whose submission is scored.
+- **Browser:** Content-Security-Policy, X-Frame-Options, HSTS, nosniff, Referrer-Policy and Permissions-Policy are set in `next.config.mjs`.
+- **Secrets:** only the publishable Supabase key is used in the website. `SUPABASE_SERVICE_KEY`, `ADMIN_TOKEN` and `CHECKER_TOKEN` live only in the Java/Python server environment, never in git or `NEXT_PUBLIC_` variables.
+- **Java service:** set `CORS_ORIGINS` to your website URL; `ADMIN_TOKEN` must be 16+ characters. **Python checker:** set `CHECKER_TOKEN` to require an `X-Checker-Token` header on `/check`.
+- **Vercel:** add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_KEY` and `NEXT_PUBLIC_SCORING_URL` under Project Settings, Environment Variables.
+- **Supabase dashboard checklist:** Authentication > URL Configuration (add your Vercel URL), OTP expiry 10 minutes or less, enable leaked-password protection if your plan has it, add custom SMTP before launch.

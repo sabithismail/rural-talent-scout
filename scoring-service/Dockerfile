@@ -8,5 +8,7 @@ RUN mvn -q -B package -DskipTests
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/scoring-service-0.1.0.jar app.jar
+RUN useradd --system --no-create-home appuser
+USER appuser
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
