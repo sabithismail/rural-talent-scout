@@ -1,0 +1,41 @@
+# Benchmarks for the sports that do not have their own class.
+# slug,name,unit,curve,seniorFloor,seniorElite,femaleFactor,hardMax
+# floor = result worth 0 points, elite = result worth 100 points, both for senior males.
+# The curve scales them down for younger age groups; femaleFactor scales them for girls and women.
+# If floor is bigger than elite, a lower result is better (times).
+# Starter values: cross-checked against published sports university entry standards (50 m dash, standing
+# broad jump, 4x10 m shuttle, sit-ups, 600 m) but NOT yet calibrated with district or state norms.
+middle-distance,Middle Distance Run,seconds,TIME,210,100,1.12,
+long-distance,Long Distance Run,seconds,TIME,600,300,1.15,
+shuttle-run,Shuttle Run,seconds,TIME,14.0,9.0,1.10,
+triple-jump,Triple Jump,cm,DISTANCE,400,800,0.80,
+high-jump,High Jump,cm,DISTANCE,90,190,0.85,
+shot-put,Shot Put,metres,DISTANCE,4,14,0.70,
+discus-throw,Discus Throw,metres,DISTANCE,10,45,0.70,
+kho-kho,Kho-Kho,seconds,TIME,9.0,6.0,1.10,
+cricket-batting,Cricket Batting,out of 12,FLAT,2,11,1.0,12
+football,Football,seconds,TIME,16,9,1.10,
+hockey,Hockey,seconds,TIME,18,10,1.10,
+volleyball,Volleyball,out of 10,FLAT,1,9,1.0,10
+basketball,Basketball,out of 10,FLAT,1,9,1.0,10
+handball,Handball,metres,DISTANCE,10,38,0.70,
+throwball,Throwball,metres,DISTANCE,10,32,0.80,
+ball-badminton,Ball Badminton,out of 10,FLAT,1,9,1.0,10
+badminton,Badminton,out of 10,FLAT,1,9,1.0,10
+table-tennis,Table Tennis,count,COUNT,8,60,0.90,
+tennis,Tennis,out of 10,FLAT,1,8,1.0,10
+tennikoit,Tennikoit,out of 10,FLAT,1,9,1.0,10
+wrestling,Wrestling,count,COUNT,15,50,0.85,
+boxing,Boxing,count,COUNT,30,110,0.90,
+judo,Judo,count,COUNT,12,40,0.85,
+weightlifting,Weightlifting,count,COUNT,20,70,0.85,
+archery,Archery,out of 60,FLAT,6,52,1.0,60
+swimming,Swimming,seconds,TIME,90,30,1.10,
+cycling,Cycling,seconds,TIME,150,70,1.10,
+gymnastics,Gymnastics,seconds,COUNT,3,40,0.90,
+yoga,Yoga,seconds,COUNT,10,120,1.0,
+skipping,Skipping,count,COUNT,40,160,0.95,
+sit-ups,Sit-ups,count,COUNT,15,60,0.88,
+pull-ups,Pull-ups,count,COUNT,0,20,0.50,
+push-ups,Push-ups,count,COUNT,10,55,0.70,
+rope-climb,Rope Climb,seconds,TIME,20,6,1.20,

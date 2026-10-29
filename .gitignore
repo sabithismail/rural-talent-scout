@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+# secrets: keep .env.example (no secrets), ignore everything else
+.env
+.env.*
+!.env.example
+*.pem
+next-env.d.ts
+*.tsbuildinfo
+# python / java build output
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+scoring-service/target/
