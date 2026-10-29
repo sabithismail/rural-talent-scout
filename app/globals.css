@@ -328,3 +328,11 @@ label { font-size: 0.74rem; font-weight: 700; }
 .estimate .big, .score { color: var(--plum); }
 @media (max-width: 760px) { .intro-hero { padding-top: 84px; } }
 .intro-hero p.kicker, .intro-why p.kicker { margin: 0 0 14px; max-width: none; color: var(--plum); }
+
+/* heavier display type: Anton has one weight, so a thin outline in the same colour thickens it */
+h1, h2, .splash-word { -webkit-text-stroke: 0.02em currentColor; paint-order: stroke fill; }
+.intro-hero h1 { -webkit-text-stroke: 0.015em currentColor; }
+.intro-hero .lede, .intro-why .lede { font-weight: 700; }
+.kicker { font-weight: 700; }
+h1, h2, .splash-word, .intro-hero h1 { -webkit-text-stroke: 0; letter-spacing: 0.02em; }
+.intro-hero h1 { line-height: 0.95; }
