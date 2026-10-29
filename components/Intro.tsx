@@ -29,22 +29,22 @@ export default function Intro() {
       <div className="intro-top"><Logo size={30} /> <span>Rural Talent Scout</span></div>
       <div className="intro-inner">
         <div className="intro-hero">
-          <span className="eyebrow">{t("whatTitle")}</span>
+          <p className="kicker"><span className="rule" />{t("whatTitle")}</p>
           <h1>Rural Talent Scout</h1>
-          <p>{t("whatBody")}</p>
+          <p className="lede">{t("whatBody")}</p>
         </div>
 
         <PhotoSlider />
 
         <div className="intro-why">
           <div className="glass">
-            <h2>{t("whyTitle")}</h2>
-            <p>{t("whyBody")}</p>
+            <p className="kicker"><span className="rule" />{t("whyTitle")}</p>
+            <p className="lede">{t("whyBody")}</p>
           </div>
         </div>
 
         <div className="intro-cta">
-          <button className="btn" onClick={open}>{t("selectSport")}</button>
+          <button className="btn ghost" onClick={open}>{t("selectSport")} <span aria-hidden>&rarr;</span></button>
         </div>
       </div>
     </section>
