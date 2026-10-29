@@ -34,12 +34,15 @@ export default function Intro() {
   if (phase === "gone") return null;
   return (
     <section className={`intro ${phase === "leave" ? "leaving" : ""}`} aria-label={t("whatTitle")}>
-      <div className="intro-top">
-        <div className="intro-logo"><Logo size={30} /> <span>Rural Talent Scout</span></div>
-        <nav className="intro-links" aria-label="Main">
+      <div className="topbar intro-top">
+        <span className="pill-logo"><Logo size={30} /></span>
+        <span className="pill-name">Rural Talent Scout</span>
+        <nav className="pill-links" aria-label="Main">
+          <Link href="/about#docs" onClick={skip}>Docs</Link>
+          <Link href="/about#architecture" onClick={skip}>Architecture</Link>
           <Link href="/about" onClick={skip}>{t("about")}</Link>
           <Link href="/login?mode=signup" onClick={skip}>{t("signup")}</Link>
-          <Link href="/login" onClick={skip} className="pill">{t("login")}</Link>
+          <Link href="/login" onClick={skip} className="cta">{t("login")}</Link>
         </nav>
       </div>
       <div className="intro-inner">

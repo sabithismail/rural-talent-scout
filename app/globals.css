@@ -346,3 +346,33 @@ h1, h2, .splash-word, .intro-hero h1 { -webkit-text-stroke: 0; letter-spacing: 0
 .intro-links a.pill { padding: 9px 18px; border-radius: 999px; background: var(--plum); color: #fff; }
 .intro-links a.pill:hover { opacity: 0.9; }
 @media (max-width: 760px) { .intro-logo span { display: none; } .intro-links { gap: 14px; } }
+
+/* ---------- top bar as three separate floating pills: logo | name | links ---------- */
+.topbar, .nav.topbar, .intro-top {
+  background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 0; padding: 0;
+  display: flex; align-items: center; gap: 10px; width: min(1100px, calc(100% - 24px));
+}
+.pill-logo, .pill-name, .pill-links {
+  background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.85); border-radius: 999px;
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 8px 28px rgba(var(--shade), 0.10);
+  display: flex; align-items: center; color: var(--plum); text-decoration: none;
+}
+.pill-logo { width: 52px; height: 52px; justify-content: center; flex: none; }
+.pill-name { height: 52px; padding: 0 22px; font-family: var(--label); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+.pill-links { margin-left: auto; height: 52px; padding: 0 12px 0 24px; gap: 22px; }
+.pill-links a, .pill-links button.link { font-family: var(--label); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.7rem; font-weight: 700; color: var(--plum); text-decoration: none; background: none; border: 0; cursor: pointer; padding: 0; }
+.pill-links a:hover, .pill-links button.link:hover { opacity: 0.6; }
+.pill-links a.cta { background: var(--plum); color: #fff; padding: 11px 20px; border-radius: 999px; }
+.pill-links a.cta:hover { opacity: 0.9; }
+.pill-links select { height: 34px; }
+.pill-name.waiting { position: absolute; top: 62px; left: 0; height: 36px; }
+@media (max-width: 1000px) { .pill-links a.docs-x { display: none; } }
+@media (max-width: 760px) {
+  .pill-name { display: none; }
+  .pill-links { padding: 0 10px 0 16px; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+  .nav .pill-links a, .nav .pill-links button.link { display: none; }  /* the bottom tab bar has these */
+  .nav .pill-links { padding: 0 10px; }
+  .pill-links { white-space: nowrap; }
+  .intro-top .pill-links a[href^="/about"] { display: none; }
+  .intro-top .pill-links a[href="/about"] { display: none; }
+}

@@ -28,10 +28,13 @@ export default function Nav() {
   }, [user]);
 
   return (
-    <header className="nav">
-      <div className="nav-inner">
-        <Link href="/" className="brand"><Logo size={30} /> <span>Rural Talent Scout</span></Link>
+    <header className="nav topbar">
+      <Link href="/" className="pill-logo" aria-label="Home"><Logo size={30} /></Link>
+      <Link href="/" className="pill-name">Rural Talent Scout</Link>
+      <div className="pill-links">
         <Link href="/" className="link">{t("home")}</Link>
+        <Link href="/about#docs" className="link">Docs</Link>
+        <Link href="/about#architecture" className="link">Architecture</Link>
         <Link href="/about" className="link">{t("about")}</Link>
         {user && profile?.role === "player" && <Link href="/me" className="link">{t("mySubmissions")}</Link>}
         {user && profile?.role === "scout" && <Link href="/scout" className="link">{t("scoutDashboard")}</Link>}
@@ -47,11 +50,7 @@ export default function Nav() {
           <option value="kn">ಕನ್ನಡ</option>
         </select>
       </div>
-      {waiting > 0 && (
-        <div className="nav-inner muted" style={{ paddingTop: 0 }}>
-          {waiting} {t("pendingUploads")}
-        </div>
-      )}
+      {waiting > 0 && <div className="pill-name waiting">{waiting} {t("pendingUploads")}</div>}
     </header>
   );
 }

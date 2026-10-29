@@ -29,7 +29,7 @@ export default function About() {
       </div>
 
       <div className="card">
-        <h2 style={{ marginTop: 0 }}>How to use it</h2>
+        <h2 id="docs" style={{ marginTop: 0 }}>How to use it</h2>
         <h3>If you are a player</h3>
         <ol>
           <li><strong>Create an account.</strong> Choose a username (it must not be taken), set a password with at least 8 characters, a letter and a number, and enter the 6 digit code we email you.</li>
@@ -49,7 +49,7 @@ export default function About() {
       </div>
 
       <div className="card">
-        <h2 style={{ marginTop: 0 }}>How the pieces fit</h2>
+        <h2 id="architecture" style={{ marginTop: 0 }}>How the pieces fit</h2>
         <ul>
           <li><strong>Website and app (Next.js PWA):</strong> one codebase. On a phone it opens as an app with a bottom tab bar and can be installed to the home screen. On a desktop it is a full website.</li>
           <li><strong>Accounts, data and videos (Supabase):</strong> sign-in with email codes, unique usernames, profiles, private video storage and row-level security so players only see their own data.</li>
