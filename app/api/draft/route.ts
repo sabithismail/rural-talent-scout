@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
+import { SUPABASE_URL, SUPABASE_KEY } from "@/lib/supabase-config";
 import { templateDraft, UUID_RE, type Facts } from "@/lib/federation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || process.env.RTS_API; // server-only, never NEXT_PUBLIC_
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-5-5";
 
