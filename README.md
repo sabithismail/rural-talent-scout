@@ -41,3 +41,14 @@ Email + 6-digit OTP, unique username (3-20 letters, numbers, underscore), passwo
 - **Java service:** set `CORS_ORIGINS` to your website URL; `ADMIN_TOKEN` must be 16+ characters. **Python checker:** set `CHECKER_TOKEN` to require an `X-Checker-Token` header on `/check`.
 - **Vercel:** add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_KEY` and `NEXT_PUBLIC_SCORING_URL` under Project Settings, Environment Variables.
 - **Supabase dashboard checklist:** Authentication > URL Configuration (add your Vercel URL), OTP expiry 10 minutes or less, enable leaked-password protection if your plan has it, add custom SMTP before launch.
+
+
+## Contact your state sports body (score 70+)
+
+A player with a scored video of 70 or more and parent/guardian consent can prepare an email to the sports body of their state.
+
+- The website prepares the text. The player sends it from their own mail app (Gmail compose link, `mailto:` or copy), so it comes from their own address and does not fail SPF/DKIM like a spoofed sender would.
+- The email carries a proof link `/verify/<token>`. The page shows only first name, district, state, sport, score and date, and only while the video is scored and consent is on. The player can switch the link off.
+- `supabase/federation_contact.sql` creates `federations` (36 states and union territories), `outreach_log` and the RPCs `prepare_outreach`, `verify_score`, `revoke_share_link`. Eligibility, ownership and a limit of 5 prepared messages per day are enforced in the database.
+- Every federation row has a source URL and a flag: `official` (a state sports department, authority, council or Olympic body) or `closest` (the nearest public contact, for example a school-sports office or a single-sport association). The page tells the player which one they are looking at. Addresses were collected from public pages and not tested by sending mail, so re-check them before relying on them.
+- `/api/draft` asks Claude (set `ANTHROPIC_API_KEY` on the server) to phrase the email from the verified facts only. Output is checked (link present, score unchanged, no extra links or addresses); otherwise a plain template is used.

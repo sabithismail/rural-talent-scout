@@ -8,14 +8,14 @@ import type { Submission } from "@/lib/types";
 
 export default function MySubmissions() {
   const { t, sport } = useI18n();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [rows, setRows] = useState<Submission[]>([]);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("submissions")
-      .select("*, sports(name, slug, metric_label, metric_unit)")
+      .select("id, player_id, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit)")
       .eq("player_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => setRows((data as unknown as Submission[]) ?? []));
@@ -41,6 +41,16 @@ export default function MySubmissions() {
             </p>
           )}
           {r.notes && <p>{r.notes}</p>}
+          {r.status === "scored" && (r.score ?? 0) >= 70 && (
+            profile?.parent_consent ? (
+              <>
+                <p className="muted">{t("contactFedHint")}</p>
+                <p><Link className="btn" href={`/contact/${r.id}`}>{t("contactFed")}</Link></p>
+              </>
+            ) : (
+              <p className="muted">{t("needConsentHint")} <Link href="/profile">{t("profile")}</Link></p>
+            )
+          )}
         </div>
       ))}
     </>

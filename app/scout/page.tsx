@@ -27,7 +27,7 @@ export default function ScoutDashboard() {
     if (!user || !verified) return;
     let q = supabase
       .from("submissions")
-      .select("*, sports(name, slug, metric_label, metric_unit), profiles(full_name, age, village, district, state)")
+      .select("id, player_id, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit), profiles(full_name, age, village, district, state)")
       .eq("status", "scored")
       .gte("score", Number(minScore) || 0)
       .order("score", { ascending: false })
