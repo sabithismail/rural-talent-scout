@@ -5,8 +5,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY; // server-only, never NEXT_PUBLIC_
+const SUPABASE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || process.env.RTS_API; // server-only, never NEXT_PUBLIC_
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-5-5";
 
 // Best-effort limiter (per server instance). The database also caps prepared messages at 5 per day.
