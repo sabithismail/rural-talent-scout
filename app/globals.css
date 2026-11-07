@@ -394,3 +394,24 @@ h1, h2, .splash-word, .intro-hero h1 { -webkit-text-stroke: 0; letter-spacing: 0
 .pill-links select { padding: 4px 10px; font-size: 0.8rem; }
 .pill-links a, .pill-links button.link { white-space: nowrap; }
 .pill-links a.cta { display: inline-flex; align-items: center; }
+
+/* 6-box code entry with a dash in the middle */
+.otp-group { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 22px 0 8px; }
+.otp-slot { display: inline-flex; align-items: center; gap: 8px; }
+.otp-dash { width: 12px; height: 2px; background: var(--muted); border-radius: 2px; margin-right: 0; }
+.otp-group input.otp-box {
+  width: clamp(40px, 12vw, 56px); height: clamp(52px, 15vw, 66px); padding: 0; text-align: center;
+  font-family: var(--display); font-size: 1.7rem; line-height: 1; color: var(--plum);
+  background: #fff; border: 2px solid var(--line); border-radius: 12px; caret-color: var(--plum);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.otp-group input.otp-box:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 4px rgba(231, 176, 222, 0.7); }
+.otp-group input.otp-box.filled { border-color: var(--plum); }
+.otp-group input.otp-box.invalid { border-color: var(--amber-line); background: var(--amber-bg); animation: otp-shake 0.35s ease; }
+.otp-group input.otp-box.success { border-color: var(--plum); background: rgba(231, 176, 222, 0.45); }
+.otp-group input.otp-box:disabled { opacity: 0.7; }
+.otp-status { text-align: center; font-family: var(--label); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--plum); min-height: 1.4em; margin: 6px 0 4px; }
+.otp-email { text-align: center; font-weight: 700; margin: 0 0 4px; word-break: break-all; }
+.otp-lede { text-align: center; margin: 0; }
+@keyframes otp-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .otp-group input.otp-box.invalid { animation: none; } .otp-group input.otp-box { transition: none; } }

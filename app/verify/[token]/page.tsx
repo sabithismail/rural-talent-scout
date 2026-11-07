@@ -27,7 +27,7 @@ export default function Verify() {
   const where = [proof.district, proof.state].filter(Boolean).join(", ");
   return (
     <>
-      <h1>{t("verifyTitle")}</h1>
+      <h1>{t("proofTitle")}</h1>
       <div className="card">
         <div className="row">
           <strong>{proof.first_name}</strong>

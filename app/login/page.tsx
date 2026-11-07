@@ -1,9 +1,10 @@
 "use client";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { passwordChecks } from "@/lib/password";
+import OtpInput from "@/components/OtpInput";
 
 type Mode = "login" | "signup" | "verify";
 type NameState = "idle" | "invalid" | "checking" | "free" | "taken";
@@ -24,6 +25,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const [codeBad, setCodeBad] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const verifying = useRef(false);
   const [busy, setBusy] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [msg, setMsg] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
@@ -73,16 +77,10 @@ export default function Login() {
       if (data.session) return router.push(role === "scout" ? "/scout" : "/profile");
       setMode("verify");
       setCooldown(30);
-      return setMsg({ kind: "ok", text: t("verifyBody") });
+      return;
     }
 
-    if (mode === "verify") {
-      setBusy(true);
-      const { error } = await supabase.auth.verifyOtp({ email, token: code.trim(), type: "signup" });
-      setBusy(false);
-      if (error) return setMsg({ kind: "error", text: "That code is wrong or has expired. Ask for a new one." });
-      return router.push("/profile");
-    }
+    if (mode === "verify") return verifyCode(code);
 
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -92,18 +90,33 @@ export default function Login() {
         await supabase.auth.resend({ type: "signup", email });
         setMode("verify");
         setCooldown(30);
-        return setMsg({ kind: "ok", text: t("verifyBody") });
+        return;
       }
       return setMsg({ kind: "error", text: error.message });
     }
     router.push("/");
   }
 
+  async function verifyCode(token: string) {
+    if (verifying.current || token.length < 6) return;
+    verifying.current = true;
+    setMsg(null); setCodeBad(false); setBusy(true);
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+    setBusy(false);
+    if (error) {
+      verifying.current = false;
+      setCode(""); setCodeBad(true);
+      return setMsg({ kind: "error", text: t("otpWrong") });
+    }
+    setVerified(true);
+    setTimeout(() => router.push("/profile"), 900);
+  }
+
   async function resend() {
     setMsg(null);
     const { error } = await supabase.auth.resend({ type: "signup", email });
     if (error) setMsg({ kind: "error", text: error.message });
-    else { setCooldown(30); setMsg({ kind: "ok", text: t("verifyBody") }); }
+    else { setCooldown(30); setCode(""); setCodeBad(false); setMsg({ kind: "ok", text: t("otpResent") }); }
   }
 
   const title = mode === "login" ? t("login") : mode === "signup" ? t("signup") : t("verifyTitle");
@@ -151,18 +164,28 @@ export default function Login() {
           </>
         ) : (
           <>
-            <p className="muted">{email}</p>
-            <label htmlFor="code">{t("verifyBody")}</label>
-            <input id="code" className="otp" type="text" inputMode="numeric" autoComplete="one-time-code"
-              pattern="[0-9]*" maxLength={6} required value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+            <p className="otp-lede">{t("otpSent")}</p>
+            <p className="otp-email">{email}</p>
+            <OtpInput
+              value={code}
+              onChange={(v) => { setCode(v); if (codeBad) setCodeBad(false); }}
+              onComplete={(v) => verifyCode(v)}
+              disabled={busy || verified}
+              invalid={codeBad}
+              success={verified}
+              groupLabel={t("otpGroup")}
+              digitLabel={(n, total) => t("otpDigit").replace("{n}", String(n)).replace("{total}", String(total))}
+            />
+            <div className="otp-status" aria-live="polite">
+              {verified ? t("otpVerified") : busy ? t("otpChecking") : t("otpExpires")}
+            </div>
           </>
         )}
 
         {msg && <div className={`notice ${msg.kind}`}>{msg.text}</div>}
 
         <p>
-          <button className="btn" disabled={busy || (mode === "verify" && code.length < 6)} type="submit">
+          <button className="btn" disabled={busy || verified || (mode === "verify" && code.length < 6)} type="submit">
             {mode === "login" ? t("login") : mode === "signup" ? t("signup") : t("verify")}
           </button>
         </p>
