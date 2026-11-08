@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 
+const SUPABASE_HOST = "iehvnrrfdjrpxgrvwfon.supabase.co"; // the one project this app talks to
 const isDev = process.env.NODE_ENV !== "production";
 const scoringOrigin = (() => {
   try { return new URL(process.env.NEXT_PUBLIC_SCORING_URL || "http://localhost:8080").origin; } catch { return "http://localhost:8080"; }
@@ -15,9 +16,9 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
-  "media-src 'self' blob: https://*.supabase.co",
+  `media-src 'self' blob: https://${SUPABASE_HOST}`,
   "font-src 'self' data:",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co ${scoringOrigin}${isDev ? " ws://localhost:*" : ""}`,
+  `connect-src 'self' https://${SUPABASE_HOST} wss://${SUPABASE_HOST} ${scoringOrigin}${isDev ? " ws://localhost:*" : ""}`,
   "worker-src 'self'",
   "manifest-src 'self'",
   "object-src 'none'",

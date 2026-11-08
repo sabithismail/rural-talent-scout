@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
-import { UUID_RE, gmailUrl, mailtoUrl, matchFederation, templateDraft, type Federation } from "@/lib/federation";
+import { UUID_RE, SITE_URL, gmailUrl, mailtoUrl, matchFederation, templateDraft, type Federation } from "@/lib/federation";
 
 type Sub = { id: string; status: string; score: number | null; sports: { name: string; slug: string } | null };
 type Prepared = {
@@ -30,6 +30,10 @@ export default function Contact() {
   const [source, setSource] = useState<"ai" | "template">("template");
   const [copied, setCopied] = useState(false);
   const [revoked, setRevoked] = useState(false);
+  const [loadErr, setLoadErr] = useState(false);
+  const [subLoaded, setSubLoaded] = useState(false);
+  const preselected = useRef(false);
+  const working = useRef(false);
 
   useEffect(() => {
     if (!user || !id || !UUID_RE.test(id)) return;
@@ -39,20 +43,21 @@ export default function Contact() {
       .eq("id", id)
       .eq("player_id", user.id)
       .maybeSingle()
-      .then(({ data }) => setSub((data as unknown as Sub) ?? null));
+      .then(({ data, error }) => { if (error) setLoadErr(true); setSub((data as unknown as Sub) ?? null); setSubLoaded(true); });
     supabase
       .from("federations")
       .select("id, state, keys, body_name, email, kind, confidence, source_url, note")
       .order("state")
-      .then(({ data }) => setFeds((data as Federation[]) ?? []));
+      .then(({ data, error }) => { if (error) setLoadErr(true); setFeds((data as Federation[]) ?? []); });
   }, [user, id]);
 
   // Pre-select the federation that matches the state written on the profile.
   useEffect(() => {
-    if (fedId !== "" || !feds.length) return;
-    const m = matchFederation(feds, profile?.state);
+    if (preselected.current || !feds.length || !profile) return;
+    preselected.current = true; // only once, so a later choice by the player is never overwritten
+    const m = matchFederation(feds, profile.state);
     if (m) setFedId(m.id);
-  }, [feds, profile, fedId]);
+  }, [feds, profile]);
 
   const fed = useMemo(() => feds.find((f) => f.id === fedId) ?? null, [feds, fedId]);
   const minor = profile?.age == null || (profile?.age ?? 99) < 18;
@@ -60,7 +65,7 @@ export default function Contact() {
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
   if (!UUID_RE.test(id ?? "")) return <div className="notice error">{t("err_generic")}</div>;
 
-  const eligible = !!sub && sub.status === "scored" && (sub.score ?? 0) >= 70 && profile?.parent_consent === true;
+  const eligible = !!sub && sub.status === "scored" && Math.round(sub.score ?? 0) >= 70 && profile?.parent_consent === true;
 
   const errText = (e: unknown) => {
     const m = String((e as { message?: string })?.message ?? "");
@@ -69,7 +74,8 @@ export default function Contact() {
   };
 
   async function prepare() {
-    if (!fed || !sub) return;
+    if (!fed || !sub || working.current) return;
+    working.current = true;
     setBusy(true); setErr(""); setRevoked(false);
     try {
       const { data, error } = await supabase.rpc("prepare_outreach", {
@@ -77,14 +83,14 @@ export default function Contact() {
       });
       if (error) throw error;
       const p = data as Prepared;
-      const link = `${window.location.origin}/verify/${p.token}`;
+      const link = `${SITE_URL}/verify/${p.token}`;
       let draft = { ...templateDraft({ name: p.name, age: p.age, village: p.village, district: p.district, state: p.state, sport: p.sport, score: p.score, date: p.date }, link), source: "template" as "ai" | "template" };
       try {
         const session = (await supabase.auth.getSession()).data.session;
         const r = await fetch("/api/draft", {
           method: "POST",
           headers: { "content-type": "application/json", authorization: `Bearer ${session?.access_token ?? ""}` },
-          body: JSON.stringify({ ...p, link, fedBody: p.federation.body_name }),
+          body: JSON.stringify({ token: p.token }),
         });
         if (r.ok) draft = await r.json();
       } catch {}
@@ -92,6 +98,7 @@ export default function Contact() {
     } catch (e) {
       setErr(errText(e));
     } finally {
+      working.current = false;
       setBusy(false);
     }
   }
@@ -115,6 +122,8 @@ export default function Contact() {
       <h1>{t("fedTitle")}</h1>
       <p>{t("fedIntro")}</p>
 
+      {loadErr && <div className="notice error" role="alert">{t("loadFailed")}</div>}
+      {subLoaded && !sub && !loadErr && <div className="notice error">{t("err_generic")}</div>}
       {sub && !eligible && <div className="notice error">{profile?.parent_consent ? t("fedNotEligible") : t("err_not_eligible_consent")}</div>}
       {revoked && <div className="notice ok">{t("fedRevoked")}</div>}
 

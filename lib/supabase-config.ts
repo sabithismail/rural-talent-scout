@@ -15,7 +15,10 @@ const envKey = (
 
 // Only trust the environment when it points at our own project. A different project (for example one
 // created by a hosting integration) has none of our tables, so we ignore it and use the defaults.
-const useEnv = envUrl.startsWith(`https://${OWN_REF}.`) && envKey.length > 20;
+const hostOk = (() => {
+  try { return new URL(envUrl).hostname === `${OWN_REF}.supabase.co`; } catch { return false; }
+})();
+const useEnv = hostOk && envKey.length > 20;
 
 export const SUPABASE_URL = useEnv ? envUrl : DEFAULT_URL;
 export const SUPABASE_KEY = useEnv ? envKey : DEFAULT_KEY;

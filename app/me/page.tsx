@@ -10,6 +10,8 @@ export default function MySubmissions() {
   const { t, sport } = useI18n();
   const { user, profile, loading } = useAuth();
   const [rows, setRows] = useState<Submission[]>([]);
+  const [revoked, setRevoked] = useState<string[]>([]);
+  const [msg, setMsg] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -21,11 +23,18 @@ export default function MySubmissions() {
       .then(({ data }) => setRows((data as unknown as Submission[]) ?? []));
   }, [user]);
 
+  async function revoke(id: string) {
+    setMsg("");
+    const { error } = await supabase.rpc("revoke_share_link", { p_submission: id });
+    if (error) setMsg(t("err_generic")); else setRevoked((r) => [...r, id]);
+  }
+
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
 
   return (
     <>
       <h1>{t("mySubmissions")}</h1>
+      {msg && <div className="notice error" role="alert">{msg}</div>}
       {rows.length === 0 && <p className="muted">{t("noResults")}</p>}
       {rows.map((r) => (
         <div className="card" key={r.id}>
@@ -41,11 +50,14 @@ export default function MySubmissions() {
             </p>
           )}
           {r.notes && <p>{r.notes}</p>}
-          {r.status === "scored" && (r.score ?? 0) >= 70 && (
+          {r.status === "scored" && Math.round(r.score ?? 0) >= 70 && (
             profile?.parent_consent ? (
               <>
                 <p className="muted">{t("contactFedHint")}</p>
                 <p><Link className="btn" href={`/contact/${r.id}`}>{t("contactFed")}</Link></p>
+                {revoked.includes(r.id)
+                  ? <p className="muted" role="status">{t("fedRevoked")}</p>
+                  : <p><button className="link-btn" onClick={() => revoke(r.id)}>{t("fedRevoke")}</button></p>}
               </>
             ) : (
               <p className="muted">{t("needConsentHint")} <Link href="/profile">{t("profile")}</Link></p>

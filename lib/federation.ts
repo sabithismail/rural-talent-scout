@@ -19,7 +19,12 @@ export type Facts = {
   sport: string;
   score: number;
   date: string;
+  /** When set, overrides the age-based guess (the server knows minor status but not the age). */
+  minor?: boolean;
 };
+
+/** Canonical public address, used in the proof link so previews and local runs never leak into emails. */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://rural-talent-scout.vercel.app").replace(/\/+$/, "");
 
 export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -41,7 +46,7 @@ const day = (iso: string) => {
 /** Plain, honest email built only from the player's own verified details. Used when the AI is off or fails. */
 export function templateDraft(f: Facts, link: string): { subject: string; body: string } {
   const where = [f.village, f.district, f.state].filter(Boolean).join(", ");
-  const minor = f.age == null || f.age < 18;
+  const minor = f.minor ?? (f.age == null || f.age < 18);
   const lines = [
     "Respected Sir/Madam,",
     "",
@@ -64,8 +69,12 @@ export function templateDraft(f: Facts, link: string): { subject: string; body: 
   };
 }
 
+/** Header fields must be one plain line: strip anything that could add a header or a second recipient. */
+const oneLine = (v: string) => v.replace(/[\r\n\u2028\u2029]+/g, " ").trim();
+const safeTo = (to: string) => (/^[^\s@,;<>"]+@[^\s@,;<>"]+\.[^\s@,;<>"]+$/.test(to.trim()) ? to.trim() : "");
+
 export const mailtoUrl = (to: string, subject: string, body: string) =>
-  `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  `mailto:${encodeURIComponent(safeTo(to))}?subject=${encodeURIComponent(oneLine(subject))}&body=${encodeURIComponent(body)}`;
 
 export const gmailUrl = (to: string, subject: string, body: string) =>
-  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(safeTo(to))}&su=${encodeURIComponent(oneLine(subject))}&body=${encodeURIComponent(body)}`;

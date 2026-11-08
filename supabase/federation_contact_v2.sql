@@ -1,5 +1,4 @@
--- NOT YET APPLIED to the live database (apply step was cancelled). Review before running.
--- Review fixes: atomic rate limit, audit columns, empty search_path, revoke feedback, facts RPC for the draft API.
+-- Applied 2026-11-08 as migration federation_contact_v2_review_fixes. Review fixes: atomic rate limit, audit columns, empty search_path, revoke feedback, facts RPC for the draft API.
 
 alter table public.outreach_log add column if not exists guardian_ok boolean;
 alter table public.outreach_log add column if not exists age_at_send int;
