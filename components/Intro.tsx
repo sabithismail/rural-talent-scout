@@ -67,7 +67,7 @@ export default function Intro() {
         </div>
 
         <div className="intro-cta">
-          <button className="btn" onClick={open}>{t("selectSport")} <span aria-hidden>&rarr;</span></button>
+          <button className="btn" onClick={open}>{t("selectSport")}</button>
         </div>
       </div>
     </section>

@@ -88,7 +88,7 @@ export default function ScoutDashboard() {
                     {[r.profiles?.village, r.profiles?.district, r.profiles?.state].filter(Boolean).join(", ")}
                   </div>
                   <div>{r.sports ? sport(r.sports.slug, r.sports.name) : ""}
-                    {r.metric_value != null && r.sports ? ` · ${r.sports.metric_label}: ${r.metric_value} ${r.sports.metric_unit}` : ""}
+                    {r.metric_value != null && r.sports ? `, ${r.sports.metric_label}: ${r.metric_value} ${r.sports.metric_unit}` : ""}
                   </div>
                 </div>
                 <div className="score">{r.score != null ? Math.round(r.score) : "–"}<small>/100</small></div>

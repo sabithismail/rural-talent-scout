@@ -139,7 +139,7 @@ export default function SportPage() {
         <p>{sport.drill_instructions}</p>
         <h2>{t("cameraTips")}</h2>
         <p>{sport.camera_tips}</p>
-        <p className="muted">Max length: {sport.max_clip_seconds}s · Max size: 50 MB · Measured: {sport.metric_label} ({sport.metric_unit})</p>
+        <p className="muted">Clips up to {sport.max_clip_seconds} seconds (up to 50 MB). Measured: {sport.metric_label} ({sport.metric_unit})</p>
       </div>
 
       <div className="card">
