@@ -5,8 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { passwordChecks } from "@/lib/password";
 import OtpInput from "@/components/OtpInput";
+import { SITE_URL } from "@/lib/federation";
+import { useCooldown, useLock, waitText } from "@/lib/lockout";
 
-type Mode = "login" | "signup" | "verify";
+type Mode = "login" | "signup" | "verify" | "forgot";
 type NameState = "idle" | "invalid" | "checking" | "free" | "taken";
 
 const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
@@ -54,7 +56,27 @@ export default function Login() {
     return () => clearTimeout(id);
   }, [cooldown]);
 
+  const mail = email.trim().toLowerCase();
+  const loginLock = useLock(`login:${mail}`);
+  const otpLock = useLock(`otp:${mail}`);
+  const resetCd = useCooldown(`reset:${mail}`);
+  const lockText = (secs: number) => t("tooManyTries").replace("{time}", waitText(secs));
   const pwOk = passwordChecks(password).every((c) => c.ok);
+
+  async function sendReset() {
+    setMsg(null);
+    if (resetCd.secs > 0) return setMsg({ kind: "error", text: t("waitFor").replace("{time}", waitText(resetCd.secs)) });
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(mail, { redirectTo: `${SITE_URL}/reset-password` });
+    setBusy(false);
+    if (error && /rate|seconds|too many/i.test(error.message)) {
+      resetCd.start(60);
+      return setMsg({ kind: "error", text: t("tooManyEmails") });
+    }
+    resetCd.start(60);
+    // the same answer whether or not the email has an account, so the form cannot be used to find accounts
+    setMsg({ kind: "ok", text: t("resetSent") });
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -63,7 +85,7 @@ export default function Login() {
     if (mode === "signup") {
       if (nameState === "taken") return setMsg({ kind: "error", text: t("usernameTaken") });
       if (nameState !== "free") return setMsg({ kind: "error", text: t("usernameRule") });
-      if (!pwOk) return setMsg({ kind: "error", text: "Password is too weak. Follow the rules below the field." });
+      if (!pwOk) return setMsg({ kind: "error", text: t("passwordWeak") });
       setBusy(true);
       const { data, error } = await supabase.auth.signUp({
         email, password,
@@ -76,12 +98,14 @@ export default function Login() {
       }
       if (data.session) return router.push(role === "scout" ? "/scout" : "/profile");
       setMode("verify");
-      setCooldown(30);
+      setCooldown(60);
       return;
     }
 
+    if (mode === "forgot") return sendReset();
     if (mode === "verify") return verifyCode(code);
 
+    if (loginLock.secs > 0) return setMsg({ kind: "error", text: lockText(loginLock.secs) });
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
@@ -89,25 +113,32 @@ export default function Login() {
       if (/not confirmed/i.test(error.message)) {
         await supabase.auth.resend({ type: "signup", email });
         setMode("verify");
-        setCooldown(30);
+        setCooldown(60);
         return;
       }
-      return setMsg({ kind: "error", text: error.message });
+      if (/rate|too many/i.test(error.message)) return setMsg({ kind: "error", text: t("tooManyEmails") });
+      loginLock.fail();
+      setPassword("");
+      return setMsg({ kind: "error", text: t("loginWrong") });
     }
+    loginLock.clear();
     router.push("/");
   }
 
   async function verifyCode(token: string) {
     if (verifying.current || token.length < 6) return;
+    if (otpLock.secs > 0) { setCode(""); return setMsg({ kind: "error", text: lockText(otpLock.secs) }); }
     verifying.current = true;
     setMsg(null); setCodeBad(false); setBusy(true);
     const { error } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
     setBusy(false);
     if (error) {
       verifying.current = false;
+      otpLock.fail();
       setCode(""); setCodeBad(true);
       return setMsg({ kind: "error", text: t("otpWrong") });
     }
+    otpLock.clear();
     setVerified(true);
     setTimeout(() => router.push("/profile"), 900);
   }
@@ -116,10 +147,10 @@ export default function Login() {
     setMsg(null);
     const { error } = await supabase.auth.resend({ type: "signup", email });
     if (error) setMsg({ kind: "error", text: error.message });
-    else { setCooldown(30); setCode(""); setCodeBad(false); setMsg({ kind: "ok", text: t("otpResent") }); }
+    else { setCooldown(60); setCode(""); setCodeBad(false); setMsg({ kind: "ok", text: t("otpResent") }); }
   }
 
-  const title = mode === "login" ? t("login") : mode === "signup" ? t("signup") : t("verifyTitle");
+  const title = mode === "login" ? t("login") : mode === "signup" ? t("signup") : mode === "forgot" ? t("forgotTitle") : t("verifyTitle");
 
   return (
     <div className="card" style={{ maxWidth: 480, margin: "24px auto" }}>
@@ -148,7 +179,13 @@ export default function Login() {
           </>
         )}
 
-        {mode !== "verify" ? (
+        {mode === "forgot" ? (
+          <>
+            <p className="otp-lede">{t("forgotLede")}</p>
+            <label htmlFor="email">{t("email")}</label>
+            <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </>
+        ) : mode !== "verify" ? (
           <>
             <label htmlFor="email">{t("email")}</label>
             <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -182,19 +219,28 @@ export default function Login() {
           </>
         )}
 
-        {msg && <div className={`notice ${msg.kind}`}>{msg.text}</div>}
+        {mode === "login" && loginLock.secs > 0 && <div className="notice error" role="status">{lockText(loginLock.secs)}</div>}
+        {mode === "verify" && otpLock.secs > 0 && <div className="notice error" role="status">{lockText(otpLock.secs)}</div>}
+        {msg && <div className={`notice ${msg.kind}`} role={msg.kind === "error" ? "alert" : "status"}>{msg.text}</div>}
 
         <p>
-          <button className="btn" disabled={busy || verified || (mode === "verify" && code.length < 6)} type="submit">
-            {mode === "login" ? t("login") : mode === "signup" ? t("signup") : t("verify")}
+          <button className="btn" type="submit"
+            disabled={busy || verified || (mode === "verify" && (code.length < 6 || otpLock.secs > 0)) || (mode === "login" && loginLock.secs > 0) || (mode === "forgot" && resetCd.secs > 0)}>
+            {mode === "login" ? t("login") : mode === "signup" ? t("signup") : mode === "forgot" ? t("sendResetLink") : t("verify")}
+            {mode === "forgot" && resetCd.secs > 0 ? ` (${resetCd.secs})` : ""}
           </button>
         </p>
+        {mode === "login" && (
+          <p><button type="button" className="link-btn" onClick={() => { setMsg(null); setMode("forgot"); }}>{t("forgotPassword")}</button></p>
+        )}
       </form>
 
       {mode === "verify" ? (
         <button className="btn secondary" disabled={cooldown > 0} onClick={resend}>
           {t("resend")}{cooldown > 0 ? ` (${cooldown})` : ""}
         </button>
+      ) : mode === "forgot" ? (
+        <button className="btn secondary" onClick={() => { setMsg(null); setMode("login"); }}>{t("backToLogin")}</button>
       ) : (
         <button className="btn secondary" onClick={() => { setMsg(null); setMode(mode === "login" ? "signup" : "login"); }}>
           {mode === "login" ? t("signup") : t("login")}
