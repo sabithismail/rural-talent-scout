@@ -37,7 +37,7 @@ export default function AboutView() {
         <ul>{a.arch.map(([b, t]) => <li key={b}><strong>{b}</strong> {t}</li>)}</ul>
         <h2>{a.scoreH}</h2>
         <p>{a.scoreP1}</p>
-        <pre className="code">{`score = clamp( (value - floor) / (elite - floor), 0, 1 ) x 100`}</pre>
+        <pre className="code" tabIndex={0}>{`score = clamp( (value - floor) / (elite - floor), 0, 1 ) x 100`}</pre>
         <p>{a.scoreP2}</p>
         <p className="muted">{a.scoreNote}</p>
       </div>
@@ -45,7 +45,7 @@ export default function AboutView() {
       <div className="card">
         <h2 style={{ marginTop: 0 }}>{a.javaH}</h2>
         <p>{rich(a.javaP)}</p>
-        <pre className="code">{`POST /api/score
+        <pre className="code" tabIndex={0}>{`POST /api/score
 { "sport": "sprint", "age": 16, "gender": "male", "value": 7.0 }
 
 200 OK

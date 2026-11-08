@@ -45,9 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <I18nProvider>
+          <a className="skip" href="#main">Skip to content</a>
           <Splash />
           <Nav />
-          <main>{children}</main>
+          <main id="main" tabIndex={-1}>{children}</main>
           <Footer />
           <TabBar />
           <InstallPrompt />

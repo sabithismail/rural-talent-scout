@@ -11,20 +11,25 @@ export default function Home() {
   const { t, sport, cat: catName } = useI18n();
   const [sports, setSports] = useState<Sport[]>([]);
   const [err, setErr] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [tries, setTries] = useState(0);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
 
   useEffect(() => {
+    setErr(""); setLoaded(false);
     supabase
       .from("sports")
       .select("*")
       .order("category")
       .order("name")
       .then(({ data, error }) => {
-        if (error) setErr(error.message);
+        if (error) setErr(t("loadSportsError"));
         else setSports((data as Sport[]) ?? []);
+        setLoaded(true);
       });
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tries]);
 
   const categories = useMemo(() => Array.from(new Set(sports.map((s) => s.category))), [sports]);
 
@@ -58,17 +63,25 @@ export default function Home() {
           {q && <button className="clear" onClick={() => setQ("")} aria-label={t("clearSearch")}>×</button>}
         </div>
 
-        <div className="chips" role="tablist" aria-label="Categories">
-          <button className={`chip ${cat === "all" ? "on" : ""}`} onClick={() => setCat("all")}>{t("allCategories")}</button>
+        <div className="chips" role="group" aria-label={t("categoryLabel")}>
+          <button className={`chip ${cat === "all" ? "on" : ""}`} aria-pressed={cat === "all"} onClick={() => setCat("all")}>{t("allCategories")}</button>
           {categories.map((c) => (
-            <button key={c} className={`chip ${cat === c ? "on" : ""}`} onClick={() => setCat(c)}>{catName(c)}</button>
+            <button key={c} className={`chip ${cat === c ? "on" : ""}`} aria-pressed={cat === c} onClick={() => setCat(c)}>{catName(c)}</button>
           ))}
         </div>
 
-        {err && <div className="notice error">{err}</div>}
-        <p className="muted count">{shown.length} / {sports.length}</p>
+        {err && (
+          <div className="notice error" role="alert">
+            {err} <button className="link-btn" onClick={() => setTries((n) => n + 1)}>{t("tryAgain")}</button>
+          </div>
+        )}
+        {loaded && !err && <p className="muted count" aria-live="polite">{shown.length} / {sports.length} {t("sportsCount")}</p>}
 
-        {shown.length === 0 && sports.length > 0 ? (
+        {!loaded ? (
+          <div className="grid" aria-hidden>
+            {Array.from({ length: 8 }).map((_, i) => <div key={i} className="tile skeleton" />)}
+          </div>
+        ) : shown.length === 0 && sports.length > 0 ? (
           <div className="notice">{t("noSport")}</div>
         ) : (
           <div className="grid">
