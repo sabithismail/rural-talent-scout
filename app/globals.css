@@ -511,3 +511,72 @@ pre.code:focus-visible { outline: 2px solid var(--ink); }
 /* loading placeholders for the sports grid: a quiet pulse, not a shimmer */
 .tile.skeleton { background: var(--lav-1); border-color: transparent; min-height: 128px; animation: pulse 1.4s ease-in-out infinite; pointer-events: none; }
 @keyframes pulse { 50% { opacity: 0.55; } }
+
+/* ======================================================================
+   Craft pass (Emil Kowalski's motion rules, Impeccable's craft floor, Taste's hover layer).
+   ====================================================================== */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);       /* strong ease-out: instant-feeling response */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);   /* things moving on screen */
+}
+
+/* the parts the browser draws by default, themed from the palette */
+::selection { background: var(--brand); color: #fff; }
+input, textarea, select { caret-color: var(--brand); accent-color: var(--brand); }
+html { scrollbar-color: rgba(17, 17, 17, 0.35) var(--cream); scrollbar-width: thin; }
+a { text-underline-offset: 0.18em; text-decoration-thickness: 1.5px; }
+.score, .count, td, th, .otp-box, time { font-variant-numeric: tabular-nums; }
+
+/* line breaks and measure */
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+main p, main li { max-width: 68ch; }
+.why-h { font-family: var(--display); text-transform: uppercase; font-weight: 400; font-size: 1.7rem; line-height: 1.1; margin: 0 0 10px; letter-spacing: 0; }
+
+/* notices: a full hairline and a tint, not a thick coloured edge */
+.notice { border: 1px solid var(--line); border-left-width: 1px; background: var(--solid); border-radius: 8px; }
+.notice.error { border-color: var(--amber-line); background: var(--amber-bg); }
+.notice.ok { border-color: var(--brand); background: #FBEDE5; }
+@starting-style { .notice { opacity: 0; transform: translateY(-4px); } }
+.notice { transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out); }
+
+/* everything pressable answers the press: a 3% squeeze, back out fast */
+.btn, .chip, .tile, .tabbar a, .pill-links a, .link-btn, .arrow {
+  transition: transform 160ms var(--ease-out), background-color 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+.btn:active, .chip:active, .tile:active, .tabbar a:active, .arrow:active { transform: scale(0.97); }
+.arrow:active { transform: translateY(-50%) scale(0.95); }
+
+/* hover only where a pointer can hover: a tap on a phone must not leave a card stuck lifted */
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover, .tile:focus-visible { transform: translateY(-2px); }
+  .tile:active { transform: translateY(-2px) scale(0.98); }
+  .btn:hover { transform: none; }
+  .slide img { transition: transform 600ms var(--ease-out); }
+  .slider:hover .slide img { transform: scale(1.025); }
+  .slide { overflow: hidden; }
+  main p a:hover, main li a:hover, .link-btn:hover { text-decoration-color: transparent; background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1.5px no-repeat; animation: underline-draw 240ms var(--ease-out); }
+}
+@keyframes underline-draw { from { background-size: 0 1.5px; } to { background-size: 100% 1.5px; } }
+
+/* one authored moment: the sport tiles settle in once, 40 ms apart (never on every section, never on keyboard actions) */
+@media (prefers-reduced-motion: no-preference) {
+  .grid > .float { animation: tile-in 360ms var(--ease-out) both; }
+  .grid > .float:nth-child(1) { animation-delay: 0ms; }
+  .grid > .float:nth-child(2) { animation-delay: 40ms; }
+  .grid > .float:nth-child(3) { animation-delay: 80ms; }
+  .grid > .float:nth-child(4) { animation-delay: 120ms; }
+  .grid > .float:nth-child(5) { animation-delay: 160ms; }
+  .grid > .float:nth-child(6) { animation-delay: 200ms; }
+  .grid > .float:nth-child(n+7) { animation-delay: 240ms; }
+}
+@keyframes tile-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* reduced motion keeps the quiet fades and drops the movement */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* display type stops at 6rem so the photo and the call to action stay on the first screen */
+.intro-hero h1 { font-size: clamp(3.4rem, 12vw, 6rem); line-height: 0.95; margin-bottom: 14px; }
+:lang(hi) .intro-hero h1, :lang(kn) .intro-hero h1 { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1.15; }

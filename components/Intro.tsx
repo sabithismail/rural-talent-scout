@@ -52,7 +52,6 @@ export default function Intro() {
       </div>
       <div className="intro-inner">
         <div className="intro-hero">
-          <p className="kicker"><span className="rule" />{t("whatTitle")}</p>
           <h1>{t("appName")}</h1>
           <p className="lede">{t("whatBody")}</p>
         </div>
@@ -61,7 +60,7 @@ export default function Intro() {
 
         <div className="intro-why">
           <div className="glass">
-            <p className="kicker"><span className="rule" />{t("whyTitle")}</p>
+            <h2 className="why-h">{t("whyTitle")}</h2>
             <p className="lede">{t("whyBody")}</p>
           </div>
         </div>
