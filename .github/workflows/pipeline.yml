@@ -1,0 +1,54 @@
+name: Score pending uploads
+
+# Every 5 minutes: check new videos (Python), then score the validated ones (Java service).
+# Needs these repository secrets: SUPABASE_URL, SUPABASE_SERVICE_KEY, SCORING_URL, ADMIN_TOKEN.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      SCORING_URL: ${{ secrets.SCORING_URL }}
+      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets
+        run: |
+          for v in SUPABASE_URL SUPABASE_SERVICE_KEY SCORING_URL ADMIN_TOKEN; do
+            if [ -z "${!v}" ]; then echo "::error::Missing repository secret $v"; exit 1; fi
+          done
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: video-checker/requirements.txt
+
+      - name: Install checker
+        run: pip install -r video-checker/requirements.txt
+
+      - name: Check new videos
+        working-directory: video-checker
+        run: python -m app.worker --once
+
+      - name: Score validated submissions
+        run: |
+          # The free Java host sleeps when idle, so the first call can take about a minute.
+          curl --silent --show-error --fail-with-body --retry 4 --retry-delay 20 --retry-all-errors \
+            --max-time 120 -X POST \
+            -H "X-Admin-Token: $ADMIN_TOKEN" \
+            "${SCORING_URL%/}/api/jobs/score-pending"

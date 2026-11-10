@@ -29,7 +29,7 @@ Scoring job: `POST /api/jobs/score-pending` with header `X-Admin-Token`; env `SU
 - Supabase email sending is rate-limited on the free tier; add custom SMTP before a real launch.
 - Put the four photos in `public/photos/` (see the README there).
 - Add team members and their Instagram / LinkedIn / GitHub in `lib/team.ts`.
-- Host the Java and Python services separately (each has a Dockerfile); Vercel runs only the website.
+- Host the scoring pipeline (see **Hosting the scoring pipeline** below); Vercel runs only the website.
 
 ## Login rules
 Email + 6-digit OTP, unique username (3-20 letters, numbers, underscore), password of 8+ characters with a letter and a number.
@@ -52,3 +52,15 @@ A player with a scored video of 70 or more and parent/guardian consent can prepa
 - `supabase/federation_contact.sql` creates `federations` (36 states and union territories), `outreach_log` and the RPCs `prepare_outreach`, `verify_score`, `revoke_share_link`. Eligibility, ownership and a limit of 5 prepared messages per day are enforced in the database.
 - Every federation row has a source URL and a flag: `official` (a state sports department, authority, council or Olympic body) or `closest` (the nearest public contact, for example a school-sports office or a single-sport association). The page tells the player which one they are looking at. Addresses were collected from public pages and not tested by sending mail, so re-check them before relying on them.
 - `/api/draft` asks Claude (set `ANTHROPIC_API_KEY` on the server) to phrase the email from the verified facts only. Output is checked (link present, score unchanged, no extra links or addresses); otherwise a plain template is used.
+
+
+## Hosting the scoring pipeline
+
+Uploads move `pending` -> `validated` (Python checker) -> `scored` (Java service). Both steps run every 5 minutes from a GitHub Actions schedule (`.github/workflows/pipeline.yml`), so only the Java service needs a host.
+
+1. **Render:** New > Blueprint > pick this repo (it reads `render.yaml`). When asked, paste `SUPABASE_SERVICE_KEY` (Supabase > Project Settings > API > service_role). Render generates `ADMIN_TOKEN`; copy it from the service's Environment tab.
+2. **GitHub:** repo > Settings > Secrets and variables > Actions > add `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `ADMIN_TOKEN` (same as Render) and `SCORING_URL` (the `https://...onrender.com` address, no slash).
+3. **Vercel:** set `NEXT_PUBLIC_SCORING_URL` to the same Render address and redeploy.
+4. Run the workflow once by hand (Actions > Score pending uploads > Run workflow) and check it is green.
+
+The free Render plan sleeps when idle; the 5-minute schedule keeps it mostly awake, and a cold start takes about a minute.

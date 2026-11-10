@@ -1,0 +1,21 @@
+# Render blueprint for the Java scoring service. In Render: New > Blueprint > pick this repo.
+services:
+  - type: web
+    name: rural-talent-scoring
+    runtime: docker
+    rootDir: scoring-service
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://rural-talent-scout.vercel.app
+      - key: SUPABASE_URL
+        value: https://iehvnrrfdjrpxgrvwfon.supabase.co
+      - key: SUPABASE_SERVICE_KEY
+        sync: false   # paste in the Render dashboard, never in git
+      - key: ADMIN_TOKEN
+        generateValue: true   # Render makes a long random value; copy it into the GitHub secret ADMIN_TOKEN
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx380m   # free plan has 512 MB
