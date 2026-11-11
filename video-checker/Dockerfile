@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 WORKDIR /app
-RUN pip install --no-cache-dir fastapi "uvicorn[standard]" python-multipart opencv-python-headless numpy httpx
+RUN pip install --no-cache-dir fastapi "uvicorn[standard]" python-multipart "opencv-python-headless>=4.9,<5" numpy httpx
 COPY app ./app
 RUN useradd --system --no-create-home appuser
 USER appuser
