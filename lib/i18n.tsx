@@ -1,5 +1,6 @@
 "use client";
 import { extra, categories, sportNamesExtra } from "./i18n-extra";
+import { accountStrings } from "./i18n-account";
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export type Lang = "en" | "hi" | "kn";
@@ -161,7 +162,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = l;
   };
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
-  const t = (k: string) => extra[k]?.[lang] ?? dict[k]?.[lang] ?? dict[k]?.en ?? extra[k]?.en ?? k;
+  const t = (k: string) => extra[k]?.[lang] ?? accountStrings[k]?.[lang] ?? dict[k]?.[lang] ?? dict[k]?.en ?? extra[k]?.en ?? k;
   const sport = (slug: string, fallback: string) => sportNamesExtra[slug]?.[lang] ?? sportNames[slug]?.[lang] ?? fallback;
   const cat = (name: string) => categories[name]?.[lang] ?? name;
   return <I18nContext.Provider value={{ lang, setLang, t, sport, cat }}>{children}</I18nContext.Provider>;

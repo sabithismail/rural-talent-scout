@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
+import { whatsappUrl, proofUrl } from "@/lib/share";
 import { UUID_RE, SITE_URL, gmailUrl, mailtoUrl, matchFederation, templateDraft, type Federation } from "@/lib/federation";
 
 type Sub = { id: string; status: string; score: number | null; sports: { name: string; slug: string } | null };
@@ -31,6 +32,8 @@ export default function Contact() {
   const [copied, setCopied] = useState(false);
   const [revoked, setRevoked] = useState(false);
   const [loadErr, setLoadErr] = useState(false);
+  const [repOpen, setRepOpen] = useState(false);
+  const [repMsg, setRepMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [subLoaded, setSubLoaded] = useState(false);
   const preselected = useRef(false);
   const working = useRef(false);
@@ -72,6 +75,15 @@ export default function Contact() {
     const hit = ["not_eligible_score", "not_eligible_consent", "guardian_needed", "rate_limited"].find((c) => m.includes(c));
     return t(hit ? `err_${hit}` : "err_generic");
   };
+
+  async function report(reason: "bounced" | "wrong_body" | "other") {
+    if (!prep) return;
+    setRepMsg(null);
+    const { error } = await supabase.rpc("report_federation_email", { p_federation: prep.federation.id, p_reason: reason });
+    if (error && !String(error.message).includes("rate_limited")) return setRepMsg({ kind: "error", text: t("reportFailed") });
+    setRepOpen(false);
+    setRepMsg({ kind: "ok", text: error ? t("err_rate_limited") : t("reportSent") });
+  }
 
   async function prepare() {
     if (!fed || !sub || working.current) return;
@@ -174,7 +186,19 @@ export default function Contact() {
             <a className="btn secondary" href={mailtoUrl(prep.federation.email, subject, body)}>{t("fedOpenMail")}</a>
             <button className="btn secondary" onClick={copy}>{copied ? t("fedCopied") : t("fedCopy")}</button>
           </div>
+          <p>
+            <a className="btn secondary" href={whatsappUrl(t("waMessage").replace("{sport}", prep.sport).replace("{score}", String(Math.round(prep.score))).replace("{link}", proofUrl(prep.token)))} target="_blank" rel="noopener noreferrer">{t("waShare")}</a>
+          </p>
           <p><button className="btn ghost" onClick={revoke}>{t("fedRevoke")}</button></p>
+          <p><button className="link-btn" aria-expanded={repOpen} onClick={() => setRepOpen((o) => !o)}>{t("reportEmail")}</button></p>
+          {repOpen && (
+            <div className="row">
+              <button className="btn secondary" onClick={() => report("bounced")}>{t("reportBounced")}</button>
+              <button className="btn secondary" onClick={() => report("wrong_body")}>{t("reportWrongBody")}</button>
+              <button className="btn secondary" onClick={() => report("other")}>{t("reportOther")}</button>
+            </div>
+          )}
+          {repMsg && <div className={`notice ${repMsg.kind}`} role={repMsg.kind === "error" ? "alert" : "status"}>{repMsg.text}</div>}
         </div>
       )}
     </>

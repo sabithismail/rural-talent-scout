@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import type { Submission } from "@/lib/types";
+import { whatsappUrl, proofUrl } from "@/lib/share";
 
 export default function MySubmissions() {
   const { t, sport } = useI18n();
@@ -27,6 +28,15 @@ export default function MySubmissions() {
     setMsg("");
     const { error } = await supabase.rpc("revoke_share_link", { p_submission: id });
     if (error) setMsg(t("err_generic")); else setRevoked((r) => [...r, id]);
+  }
+
+  async function shareWa(r: Submission) {
+    setMsg("");
+    const { data, error } = await supabase.rpc("get_share_token", { p_submission: r.id });
+    if (error || !data) return setMsg(t("err_generic"));
+    const name = r.sports ? sport(r.sports.slug, r.sports.name) : "";
+    const text = t("waMessage").replace("{sport}", name).replace("{score}", String(Math.round(r.score ?? 0))).replace("{link}", proofUrl(String(data)));
+    window.open(whatsappUrl(text), "_blank", "noopener,noreferrer");
   }
 
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
@@ -58,6 +68,12 @@ export default function MySubmissions() {
                 {revoked.includes(r.id)
                   ? <p className="muted" role="status">{t("fedRevoked")}</p>
                   : <p><button className="link-btn" onClick={() => revoke(r.id)}>{t("fedRevoke")}</button></p>}
+                {!revoked.includes(r.id) && (
+                  <>
+                    <p><button className="btn secondary" onClick={() => shareWa(r)}>{t("waShare")}</button></p>
+                    <p className="muted">{t("waHint")}</p>
+                  </>
+                )}
               </>
             ) : (
               <p className="muted">{t("needConsentHint")} <Link href="/profile">{t("profile")}</Link></p>

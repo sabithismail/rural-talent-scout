@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
 import { passwordChecks } from "@/lib/password";
 import { useLock, waitText } from "@/lib/lockout";
+import { listQueue, removeFromQueue } from "@/lib/upload";
 
 export default function ProfilePage() {
   const { t, setLang } = useI18n();
@@ -20,6 +21,10 @@ export default function ProfilePage() {
   const [pwBusy, setPwBusy] = useState(false);
   const [pwMsg, setPwMsg] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const lock = useLock(`reauth:${user?.id ?? ""}`);
+  const [delPw, setDelPw] = useState("");
+  const [delOk, setDelOk] = useState(false);
+  const [delBusy, setDelBusy] = useState(false);
+  const [delMsg, setDelMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile) return;
@@ -88,6 +93,36 @@ export default function ProfilePage() {
     setPwMsg({ kind: "ok", text: t("passwordSaved") });
   }
 
+  async function deleteAccount(e: FormEvent) {
+    e.preventDefault();
+    setDelMsg(null);
+    if (!delOk) return;
+    if (lock.secs > 0) return setDelMsg(t("tooManyTries").replace("{time}", waitText(lock.secs)));
+    setDelBusy(true);
+    const { error: authErr } = await supabase.auth.signInWithPassword({ email: user!.email ?? "", password: delPw });
+    if (authErr) {
+      setDelBusy(false); lock.fail(); setDelPw("");
+      return setDelMsg(/rate|too many/i.test(authErr.message) ? t("tooManyEmails") : t("currentWrong"));
+    }
+    lock.clear();
+    try {
+      // storage files do not cascade with the login, so remove them first
+      const { data: subs } = await supabase.from("submissions").select("video_path").eq("player_id", user!.id);
+      const paths = (subs ?? []).map((r: { video_path: string | null }) => r.video_path).filter((x): x is string => !!x);
+      if (paths.length) await supabase.storage.from("videos").remove(paths);
+      try {
+        for (const it of await listQueue()) if (it.userId === user!.id && it.id != null) await removeFromQueue(it.id);
+      } catch { /* queue is best effort */ }
+      const { error } = await supabase.rpc("delete_my_account");
+      if (error) throw error;
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch {
+      setDelBusy(false);
+      setDelMsg(t("deleteFailed"));
+    }
+  }
+
   const isPlayer = profile.role === "player";
 
   return (
@@ -144,6 +179,19 @@ export default function ProfilePage() {
         {pwMsg && <div className={`notice ${pwMsg.kind}`} role={pwMsg.kind === "error" ? "alert" : "status"}>{pwMsg.text}</div>}
         <p><button className="btn" type="submit" disabled={pwBusy || lock.secs > 0}>{t("changePassword")}</button></p>
       </form>
+    </div>
+
+    <div className="card" style={{ maxWidth: 560, margin: "16px auto" }}>
+      <h2>{t("deleteTitle")}</h2>
+      <p>{t("deleteLede")}</p>
+      <form onSubmit={deleteAccount}>
+        <label htmlFor="dpw">{t("currentPassword")}</label>
+        <input id="dpw" type="password" required autoComplete="current-password" value={delPw} onChange={(e) => setDelPw(e.target.value)} />
+        <label className="check"><input type="checkbox" checked={delOk} onChange={(e) => setDelOk(e.target.checked)} /> {t("deleteConfirmBox")}</label>
+        {delMsg && <div className="notice error" role="alert">{delMsg}</div>}
+        <p><button className="btn danger" type="submit" disabled={delBusy || !delOk || lock.secs > 0}>{delBusy ? t("deleteWorking") : t("deleteButton")}</button></p>
+      </form>
+      <p className="muted"><Link href="/privacy">{t("privacy")}</Link></p>
     </div>
     </>
   );

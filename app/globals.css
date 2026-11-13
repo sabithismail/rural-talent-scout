@@ -580,3 +580,6 @@ main p, main li { max-width: 68ch; }
 /* display type stops at 6rem so the photo and the call to action stay on the first screen */
 .intro-hero h1 { font-size: clamp(3.4rem, 12vw, 6rem); line-height: 0.95; margin-bottom: 14px; }
 :lang(hi) .intro-hero h1, :lang(kn) .intro-hero h1 { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1.15; }
+
+.btn.danger { background: #8f1d1d; border-color: #8f1d1d; color: #fff; }
+.btn.danger:disabled { opacity: .5; }
