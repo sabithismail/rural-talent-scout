@@ -18,7 +18,7 @@ export default function MySubmissions() {
     if (!user) return;
     supabase
       .from("submissions")
-      .select("id, player_id, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit)")
+      .select("id, player_id, visibility, video_deleted_at, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit)")
       .eq("player_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => setRows((data as unknown as Submission[]) ?? []));
@@ -28,6 +28,13 @@ export default function MySubmissions() {
     setMsg("");
     const { error } = await supabase.rpc("revoke_share_link", { p_submission: id });
     if (error) setMsg(t("err_generic")); else setRevoked((r) => [...r, id]);
+  }
+
+  async function setVis(id: string, v: "public" | "private") {
+    setMsg("");
+    const { error } = await supabase.rpc("set_video_visibility", { p_submission: id, p_visibility: v });
+    if (error) return setMsg(t("err_generic"));
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, visibility: v } : r)));
   }
 
   async function shareWa(r: Submission) {
@@ -60,6 +67,24 @@ export default function MySubmissions() {
             </p>
           )}
           {r.notes && <p>{r.notes}</p>}
+          {r.video_deleted_at && <p className="muted">{t("videoRemoved")}</p>}
+          {r.status === "scored" && !r.video_deleted_at && (
+            <>
+              <p><span className={`badge ${r.visibility === "public" ? "scored" : "pending"}`}>{r.visibility === "public" ? t("visPublic") : t("visPrivate")}</span></p>
+              {profile?.parent_consent ? (
+                <>
+                  <p>
+                    <button className="btn secondary" onClick={() => setVis(r.id, r.visibility === "public" ? "private" : "public")}>
+                      {r.visibility === "public" ? t("visMakePrivate") : t("visMakePublic")}
+                    </button>
+                  </p>
+                  <p className="muted">{t("visHint")}</p>
+                </>
+              ) : (
+                <p className="muted">{t("visNeedConsent")} <Link href="/profile">{t("profile")}</Link></p>
+              )}
+            </>
+          )}
           {r.status === "scored" && Math.round(r.score ?? 0) >= 70 && (
             profile?.parent_consent ? (
               <>

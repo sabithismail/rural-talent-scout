@@ -19,8 +19,12 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
       ]],
       ["Who can see it", [
         "You can see everything you saved.",
-        "Scouts approved by an administrator can see your name, place, age, score and video only when your parent or guardian consent is switched on and your video is scored.",
+        "Scouts approved by an administrator can see your name, place, age, score, video and email only when your parent or guardian consent is on, your video is scored and you have set it to Visible to scouts.",
         "Anyone with your proof link sees only your first name, district, state, sport, score and date. You can switch the link off on My results.",
+      ]],
+      ["Public and private videos", [
+        "Every video starts private. When you switch a scored video to Visible to scouts, verified scouts can watch it and see your email address so they can write to you directly. This needs parent or guardian consent. Switch it back to private at any time.",
+        "To save space, when our storage is 70% full we compress, and if needed delete, videos that scored below 70. Videos that scored 70 or more are kept. Your score always stays.",
       ]],
       ["Players under 18", [
         "Players under 18 need parent or guardian consent on their profile, and must confirm that a parent or guardian knows before preparing a message to a sports body. Age and consent are stated by the player; we do not check them.",
@@ -61,6 +65,10 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "एडमिनिस्ट्रेटर से मंज़ूर स्काउट्स आपका नाम, जगह, उम्र, स्कोर और वीडियो तभी देख सकते हैं जब माता-पिता या अभिभावक की सहमति चालू हो और आपका वीडियो स्कोर हो चुका हो।",
         "आपके प्रमाण लिंक वाला कोई भी व्यक्ति सिर्फ़ आपका पहला नाम, जिला, राज्य, खेल, स्कोर और तारीख देखता है। आप \"मेरे परिणाम\" में यह लिंक बंद कर सकते हैं।",
       ]],
+      ["सार्वजनिक और निजी वीडियो", [
+        "हर वीडियो पहले निजी रहता है। जब आप स्कोर हुए वीडियो को \"स्काउट्स को दिखाएँ\" पर करते हैं, तो सत्यापित स्काउट्स उसे देख सकते हैं और आपका ईमेल पता देखकर सीधे लिख सकते हैं। इसके लिए माता-पिता या अभिभावक की सहमति ज़रूरी है। कभी भी वापस निजी करें।",
+        "जगह बचाने के लिए, स्टोरेज 70% भर जाने पर हम 70 से कम स्कोर वाले वीडियो को छोटा करते हैं और ज़रूरत हो तो हटा देते हैं। 70 या उससे ज़्यादा स्कोर वाले वीडियो रखे जाते हैं। आपका स्कोर हमेशा रहता है।",
+      ]],
       ["18 साल से कम के खिलाड़ी", [
         "18 साल से कम के खिलाड़ियों की प्रोफ़ाइल में माता-पिता या अभिभावक की सहमति ज़रूरी है, और खेल संस्था के लिए संदेश बनाने से पहले पुष्टि करनी होगी कि उन्हें पता है। उम्र और सहमति खिलाड़ी खुद बताता है; हम इनकी जाँच नहीं करते।",
       ]],
@@ -99,6 +107,10 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "ನೀವು ಉಳಿಸಿದ ಎಲ್ಲವನ್ನೂ ನೀವು ನೋಡಬಹುದು.",
         "ಆಡಳಿತಗಾರರಿಂದ ಒಪ್ಪಿಗೆ ಪಡೆದ ಸ್ಕೌಟ್‌ಗಳು, ನಿಮ್ಮ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆ ಆನ್ ಆಗಿದ್ದು ನಿಮ್ಮ ವೀಡಿಯೊ ಸ್ಕೋರ್ ಆಗಿದ್ದರೆ ಮಾತ್ರ ನಿಮ್ಮ ಹೆಸರು, ಸ್ಥಳ, ವಯಸ್ಸು, ಸ್ಕೋರ್ ಮತ್ತು ವೀಡಿಯೊ ನೋಡಬಹುದು.",
         "ನಿಮ್ಮ ಪುರಾವೆ ಲಿಂಕ್ ಇರುವವರು ನಿಮ್ಮ ಮೊದಲ ಹೆಸರು, ಜಿಲ್ಲೆ, ರಾಜ್ಯ, ಆಟ, ಸ್ಕೋರ್ ಮತ್ತು ದಿನಾಂಕ ಮಾತ್ರ ನೋಡುತ್ತಾರೆ. \"ನನ್ನ ಫಲಿತಾಂಶಗಳು\" ಪುಟದಲ್ಲಿ ಈ ಲಿಂಕ್ ಆಫ್ ಮಾಡಬಹುದು.",
+      ]],
+      ["ಸಾರ್ವಜನಿಕ ಮತ್ತು ಖಾಸಗಿ ವೀಡಿಯೊಗಳು", [
+        "ಪ್ರತಿ ವೀಡಿಯೊ ಮೊದಲು ಖಾಸಗಿ. ಸ್ಕೋರ್ ಆದ ವೀಡಿಯೊವನ್ನು \"ಸ್ಕೌಟ್‌ಗಳಿಗೆ ತೋರಿಸಿ\" ಮಾಡಿದಾಗ, ಪರಿಶೀಲಿತ ಸ್ಕೌಟ್‌ಗಳು ಅದನ್ನು ನೋಡಬಹುದು ಮತ್ತು ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ನೋಡಿ ನೇರವಾಗಿ ಬರೆಯಬಹುದು. ಇದಕ್ಕೆ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆ ಬೇಕು. ಯಾವಾಗ ಬೇಕಾದರೂ ಖಾಸಗಿ ಮಾಡಿ.",
+        "ಜಾಗ ಉಳಿಸಲು, ಸಂಗ್ರಹ 70% ತುಂಬಿದಾಗ 70 ಕ್ಕಿಂತ ಕಡಿಮೆ ಸ್ಕೋರ್ ಇರುವ ವೀಡಿಯೊಗಳನ್ನು ಚಿಕ್ಕದು ಮಾಡುತ್ತೇವೆ, ಬೇಕಾದರೆ ಅಳಿಸುತ್ತೇವೆ. 70 ಅಥವಾ ಹೆಚ್ಚು ಸ್ಕೋರ್ ಇರುವವು ಉಳಿಯುತ್ತವೆ. ನಿಮ್ಮ ಸ್ಕೋರ್ ಯಾವಾಗಲೂ ಉಳಿಯುತ್ತದೆ.",
       ]],
       ["18 ವರ್ಷಕ್ಕಿಂತ ಕಡಿಮೆ ಆಟಗಾರರು", [
         "18 ವರ್ಷಕ್ಕಿಂತ ಕಡಿಮೆ ಆಟಗಾರರ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆ ಬೇಕು, ಮತ್ತು ಕ್ರೀಡಾ ಸಂಸ್ಥೆಗೆ ಸಂದೇಶ ಸಿದ್ಧಪಡಿಸುವ ಮೊದಲು ಅವರಿಗೆ ತಿಳಿದಿದೆ ಎಂದು ದೃಢೀಕರಿಸಬೇಕು. ವಯಸ್ಸು ಮತ್ತು ಒಪ್ಪಿಗೆಯನ್ನು ಆಟಗಾರರೇ ಹೇಳುತ್ತಾರೆ; ನಾವು ಅವನ್ನು ಪರಿಶೀಲಿಸುವುದಿಲ್ಲ.",

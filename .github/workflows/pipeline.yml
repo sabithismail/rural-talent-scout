@@ -52,3 +52,9 @@ jobs:
             --max-time 120 -X POST \
             -H "X-Admin-Token: $ADMIN_TOKEN" \
             "${SCORING_URL%/}/api/jobs/score-pending"
+
+      - name: Free storage if it is 70% full
+        # Compresses, then deletes, videos that scored below 70. Never blocks the pipeline.
+        continue-on-error: true
+        working-directory: video-checker
+        run: python -m app.retention

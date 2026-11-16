@@ -40,6 +40,8 @@ export type Submission = {
   reported_value: number | null;
   score: number | null;
   created_at: string;
+  visibility?: "public" | "private";
+  video_deleted_at?: string | null;
   sports?: Pick<Sport, "name" | "slug" | "metric_label" | "metric_unit"> | null;
   profiles?: Pick<Profile, "full_name" | "age" | "village" | "district" | "state"> | null;
 };

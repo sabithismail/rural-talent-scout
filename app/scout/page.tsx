@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/useAuth";
-import type { Sport, Submission } from "@/lib/types";
+import type { Sport } from "@/lib/types";
+
+type FeedRow = {
+  submission_id: string; player_id: string; full_name: string; age: number | null; village: string | null;
+  district: string | null; state: string | null; sport_id: number; score: number; metric_value: number | null;
+  created_at: string; email: string;
+};
 
 export default function ScoutDashboard() {
   const { t, sport } = useI18n();
@@ -13,7 +19,7 @@ export default function ScoutDashboard() {
   const [sportId, setSportId] = useState("");
   const [minScore, setMinScore] = useState("0");
   const [stateFilter, setStateFilter] = useState("");
-  const [rows, setRows] = useState<Submission[]>([]);
+  const [rows, setRows] = useState<FeedRow[]>([]);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [videoUrl, setVideoUrl] = useState<Record<string, string>>({});
 
@@ -25,21 +31,13 @@ export default function ScoutDashboard() {
 
   const load = useCallback(async () => {
     if (!user || !verified) return;
-    let q = supabase
-      .from("submissions")
-      .select("id, player_id, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit), profiles(full_name, age, village, district, state)")
-      .eq("status", "scored")
-      .gte("score", Number(minScore) || 0)
-      .order("score", { ascending: false })
-      .limit(100);
-    if (sportId) q = q.eq("sport_id", Number(sportId));
-    const { data } = await q;
-    let list = (data as unknown as Submission[]) ?? [];
-    if (stateFilter.trim()) {
-      const s = stateFilter.trim().toLowerCase();
-      list = list.filter((r) => r.profiles?.state?.toLowerCase().includes(s));
-    }
-    setRows(list);
+    const { data } = await supabase.rpc("scout_feed", {
+      p_sport: sportId ? Number(sportId) : null,
+      p_min: Number(minScore) || 0,
+      p_state: stateFilter.trim() || null,
+      p_limit: 100,
+    });
+    setRows((data as FeedRow[]) ?? []);
     const sl = await supabase.from("shortlists").select("player_id").eq("scout_id", user.id);
     setSaved(new Set((sl.data ?? []).map((r: { player_id: string }) => r.player_id)));
   }, [user, verified, sportId, minScore, stateFilter]);
@@ -56,9 +54,11 @@ export default function ScoutDashboard() {
     load();
   }
 
-  async function showVideo(r: Submission) {
-    const { data } = await supabase.storage.from("videos").createSignedUrl(r.video_path, 600);
-    if (data?.signedUrl) setVideoUrl((p) => ({ ...p, [r.id]: data.signedUrl }));
+  async function showVideo(r: FeedRow) {
+    const { data: sub } = await supabase.from("submissions").select("video_path").eq("id", r.submission_id).maybeSingle();
+    if (!sub?.video_path) return;
+    const { data } = await supabase.storage.from("videos").createSignedUrl(sub.video_path, 600);
+    if (data?.signedUrl) setVideoUrl((p) => ({ ...p, [r.submission_id]: data.signedUrl }));
   }
 
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
@@ -66,7 +66,8 @@ export default function ScoutDashboard() {
 
   return (
     <>
-      <h1>{t("scoutDashboard")}</h1>
+      <h1>{t("feedTitle")}</h1>
+      <p className="muted">{t("feedLede")}</p>
       {profile && !verified && <div className="notice">{t("notVerified")}</div>}
       {verified && (
         <>
@@ -79,28 +80,32 @@ export default function ScoutDashboard() {
             <input type="text" value={stateFilter} onChange={(e) => setStateFilter(e.target.value)} placeholder={t("state")} aria-label={t("state")} />
           </div>
           {rows.length === 0 && <p className="muted">{t("noResults")}</p>}
-          {rows.map((r) => (
-            <div className="card" key={r.id}>
-              <div className="row">
-                <div>
-                  <strong>{r.profiles?.full_name}</strong>{r.profiles?.age ? `, ${r.profiles.age}` : ""}
-                  <div className="muted">
-                    {[r.profiles?.village, r.profiles?.district, r.profiles?.state].filter(Boolean).join(", ")}
+          {rows.map((r) => {
+            const sp = sports.find((x) => x.id === r.sport_id);
+            const spName = sp ? sport(sp.slug, sp.name) : "";
+            const subject = t("emailSubject").replace("{sport}", spName);
+            const body = t("emailBody").replace("{name}", r.full_name.split(" ")[0]).replace("{sport}", spName).replace("{score}", String(Math.round(r.score)));
+            return (
+              <div className="card" key={r.submission_id}>
+                <div className="row">
+                  <div>
+                    <strong>{r.full_name}</strong>{r.age ? `, ${r.age}` : ""}
+                    <div className="muted">{[r.village, r.district, r.state].filter(Boolean).join(", ")}</div>
+                    <div>{spName}{r.metric_value != null && sp ? `, ${sp.metric_label}: ${r.metric_value} ${sp.metric_unit}` : ""}</div>
                   </div>
-                  <div>{r.sports ? sport(r.sports.slug, r.sports.name) : ""}
-                    {r.metric_value != null && r.sports ? `, ${r.sports.metric_label}: ${r.metric_value} ${r.sports.metric_unit}` : ""}
-                  </div>
+                  <div className="score">{Math.round(r.score)}<small>/100</small></div>
+                  <button className={`btn ${saved.has(r.player_id) ? "" : "secondary"}`} onClick={() => toggleShortlist(r.player_id)}>
+                    {saved.has(r.player_id) ? t("shortlisted") : t("shortlist")}
+                  </button>
                 </div>
-                <div className="score">{r.score != null ? Math.round(r.score) : "–"}<small>/100</small></div>
-                <button className={`btn ${saved.has(r.player_id) ? "" : "secondary"}`} onClick={() => toggleShortlist(r.player_id)}>
-                  {saved.has(r.player_id) ? t("shortlisted") : t("shortlist")}
-                </button>
+                <p className="row">
+                  <a className="btn" href={`mailto:${r.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`}>{t("emailPlayer")}</a>
+                  {!videoUrl[r.submission_id] && <button className="btn secondary" onClick={() => showVideo(r)}>{t("watchVideo")}</button>}
+                </p>
+                {videoUrl[r.submission_id] && <video src={videoUrl[r.submission_id]} controls playsInline style={{ marginTop: 12 }} />}
               </div>
-              {videoUrl[r.id]
-                ? <video src={videoUrl[r.id]} controls playsInline style={{ marginTop: 12 }} />
-                : <p><button className="btn secondary" onClick={() => showVideo(r)}>{t("watchVideo")}</button></p>}
-            </div>
-          ))}
+            );
+          })}
         </>
       )}
     </>
