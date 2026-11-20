@@ -13,6 +13,7 @@ export default function MySubmissions() {
   const [rows, setRows] = useState<Submission[]>([]);
   const [revoked, setRevoked] = useState<string[]>([]);
   const [msg, setMsg] = useState("");
+  const [notifs, setNotifs] = useState<{ id: string; kind: string; created_at: string; read_at: string | null }[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -23,6 +24,17 @@ export default function MySubmissions() {
       .order("created_at", { ascending: false })
       .then(({ data }) => setRows((data as unknown as Submission[]) ?? []));
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("notifications").select("id, kind, created_at, read_at").order("created_at", { ascending: false }).limit(10)
+      .then(({ data }) => setNotifs((data as typeof notifs) ?? []));
+  }, [user]);
+
+  async function markRead() {
+    await supabase.rpc("mark_notifications_read");
+    setNotifs((n) => n.map((x) => ({ ...x, read_at: x.read_at ?? new Date().toISOString() })));
+  }
 
   async function revoke(id: string) {
     setMsg("");
@@ -52,6 +64,19 @@ export default function MySubmissions() {
     <>
       <h1>{t("mySubmissions")}</h1>
       {msg && <div className="notice error" role="alert">{msg}</div>}
+      {notifs.length > 0 && (
+        <div className="card">
+          <h2>{t("notifTitle")}</h2>
+          <ul>
+            {notifs.map((n) => (
+              <li key={n.id} style={{ fontWeight: n.read_at ? 400 : 700 }}>
+                {t(`notif_${n.kind}`)} <span className="muted">{new Date(n.created_at).toLocaleDateString()}</span>
+              </li>
+            ))}
+          </ul>
+          {notifs.some((n) => !n.read_at) && <p><button className="link-btn" onClick={markRead}>{t("notifMarkRead")}</button></p>}
+        </div>
+      )}
       {rows.length === 0 && <p className="muted">{t("noResults")}</p>}
       {rows.map((r) => (
         <div className="card" key={r.id}>

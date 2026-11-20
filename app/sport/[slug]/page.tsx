@@ -170,7 +170,7 @@ export default function SportPage() {
             <div className="muted" style={{ fontSize: "0.9rem" }}>{t("resultHint")}</div>
 
             <label htmlFor="notes">{t("notes")}</label>
-            <textarea id="notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <textarea id="notes" rows={2} maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} />
             {msg && <div className={`notice ${msg.kind}`}>{msg.text}</div>}
             {extra && <div className="notice">{extra}</div>}
             <p>

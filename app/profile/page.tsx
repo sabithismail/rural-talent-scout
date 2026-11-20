@@ -14,6 +14,7 @@ export default function ProfilePage() {
   const [f, setF] = useState({
     full_name: "", age: "", gender: "", village: "", district: "", state: "", school_or_club: "", parent_consent: false,
   });
+  const [emailNotif, setEmailNotif] = useState(true);
   const [msg, setMsg] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [cur, setCur] = useState("");
   const [nw, setNw] = useState("");
@@ -38,6 +39,7 @@ export default function ProfilePage() {
       school_or_club: profile.school_or_club ?? "",
       parent_consent: profile.parent_consent,
     });
+    setEmailNotif(profile.email_notifications !== false);
   }, [profile]);
 
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
@@ -59,6 +61,7 @@ export default function ProfilePage() {
         state: f.state || null,
         school_or_club: f.school_or_club || null,
         parent_consent: f.parent_consent,
+        email_notifications: emailNotif,
       })
       .eq("id", user!.id);
     if (error) setMsg({ kind: "error", text: error.message });
@@ -131,7 +134,7 @@ export default function ProfilePage() {
       <h1>{t("profile")}</h1>
       <form onSubmit={save}>
         <label htmlFor="n">{t("fullName")}</label>
-        <input id="n" type="text" required value={f.full_name} onChange={(e) => set("full_name", e.target.value)} />
+        <input id="n" type="text" maxLength={80} required value={f.full_name} onChange={(e) => set("full_name", e.target.value)} />
         {isPlayer && (
           <>
             <label htmlFor="a">{t("age")}</label>
@@ -145,19 +148,23 @@ export default function ProfilePage() {
           </>
         )}
         <label htmlFor="v">{t("village")}</label>
-        <input id="v" type="text" value={f.village} onChange={(e) => set("village", e.target.value)} />
+        <input id="v" type="text" maxLength={80} value={f.village} onChange={(e) => set("village", e.target.value)} />
         <label htmlFor="d">{t("district")}</label>
-        <input id="d" type="text" value={f.district} onChange={(e) => set("district", e.target.value)} />
+        <input id="d" type="text" maxLength={80} value={f.district} onChange={(e) => set("district", e.target.value)} />
         <label htmlFor="s">{t("state")}</label>
-        <input id="s" type="text" value={f.state} onChange={(e) => set("state", e.target.value)} />
+        <input id="s" type="text" maxLength={80} value={f.state} onChange={(e) => set("state", e.target.value)} />
         <label htmlFor="c">{t("school")}</label>
-        <input id="c" type="text" value={f.school_or_club} onChange={(e) => set("school_or_club", e.target.value)} />
+        <input id="c" type="text" maxLength={100} value={f.school_or_club} onChange={(e) => set("school_or_club", e.target.value)} />
         {isPlayer && (
           <label className="check" style={{ marginTop: 18 }}>
             <input type="checkbox" checked={f.parent_consent} onChange={(e) => set("parent_consent", e.target.checked)} />
             <span>{t("consent")}</span>
           </label>
         )}
+        <label className="check" style={{ marginTop: 18 }}>
+          <input type="checkbox" checked={emailNotif} onChange={(e) => setEmailNotif(e.target.checked)} />
+          <span>{t("emailNotifLabel")}</span>
+        </label>
         {msg && <div className={`notice ${msg.kind}`}>{msg.text}</div>}
         <p><button className="btn" type="submit">{t("save")}</button></p>
       </form>

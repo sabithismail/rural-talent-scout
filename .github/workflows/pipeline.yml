@@ -22,6 +22,11 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       SCORING_URL: ${{ secrets.SCORING_URL }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+      SMTP_FROM: ${{ secrets.SMTP_FROM }}
       ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
     steps:
       - uses: actions/checkout@v4
@@ -58,3 +63,9 @@ jobs:
         continue-on-error: true
         working-directory: video-checker
         run: python -m app.retention
+
+      - name: Email notifications
+        # Optional: only runs when the SMTP_* secrets exist. Never blocks the pipeline.
+        continue-on-error: true
+        working-directory: video-checker
+        run: python -m app.notify

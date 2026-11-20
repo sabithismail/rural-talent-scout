@@ -15,7 +15,7 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "A record of each message to a sports body that you prepared on this site.",
       ]],
       ["Why we keep it", [
-        "Only to check your video, give you a score and let approved scouts find you. We show no adverts and we do not sell data.",
+        "Only to check your video, give you a score and let approved scouts find you. We show no adverts and we do not sell data. We also email you when your video is scored or a scout shortlists you; turn this off on Profile.",
       ]],
       ["Who can see it", [
         "You can see everything you saved.",
@@ -58,7 +58,7 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "इस साइट पर खेल संस्था के लिए तैयार किए गए हर संदेश का रिकॉर्ड।",
       ]],
       ["क्यों रखते हैं", [
-        "सिर्फ़ आपका वीडियो जाँचने, स्कोर देने और मंज़ूर स्काउट्स को आपको खोजने देने के लिए। हम विज्ञापन नहीं दिखाते और डेटा नहीं बेचते।",
+        "सिर्फ़ आपका वीडियो जाँचने, स्कोर देने और मंज़ूर स्काउट्स को आपको खोजने देने के लिए। हम विज्ञापन नहीं दिखाते और डेटा नहीं बेचते। वीडियो का स्कोर आने या स्काउट के शॉर्टलिस्ट करने पर हम आपको ईमेल भी करते हैं; इसे प्रोफ़ाइल में बंद कर सकते हैं।",
       ]],
       ["इसे कौन देख सकता है", [
         "आपने जो सेव किया है वह सब आप देख सकते हैं।",
@@ -101,7 +101,7 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಕ್ರೀಡಾ ಸಂಸ್ಥೆಗೆ ನೀವು ಸಿದ್ಧಪಡಿಸಿದ ಪ್ರತಿ ಸಂದೇಶದ ದಾಖಲೆ.",
       ]],
       ["ಏಕೆ ಇಟ್ಟುಕೊಳ್ಳುತ್ತೇವೆ", [
-        "ನಿಮ್ಮ ವೀಡಿಯೊ ಪರಿಶೀಲಿಸಲು, ಸ್ಕೋರ್ ನೀಡಲು ಮತ್ತು ಒಪ್ಪಿಗೆ ಪಡೆದ ಸ್ಕೌಟ್‌ಗಳು ನಿಮ್ಮನ್ನು ಹುಡುಕಲು ಮಾತ್ರ. ನಾವು ಜಾಹೀರಾತು ತೋರಿಸುವುದಿಲ್ಲ, ಡೇಟಾ ಮಾರುವುದಿಲ್ಲ.",
+        "ನಿಮ್ಮ ವೀಡಿಯೊ ಪರಿಶೀಲಿಸಲು, ಸ್ಕೋರ್ ನೀಡಲು ಮತ್ತು ಒಪ್ಪಿಗೆ ಪಡೆದ ಸ್ಕೌಟ್‌ಗಳು ನಿಮ್ಮನ್ನು ಹುಡುಕಲು ಮಾತ್ರ. ನಾವು ಜಾಹೀರಾತು ತೋರಿಸುವುದಿಲ್ಲ, ಡೇಟಾ ಮಾರುವುದಿಲ್ಲ. ವೀಡಿಯೊ ಸ್ಕೋರ್ ಆದಾಗ ಅಥವಾ ಸ್ಕೌಟ್ ಶಾರ್ಟ್‌ಲಿಸ್ಟ್ ಮಾಡಿದಾಗ ನಿಮಗೆ ಇಮೇಲ್ ಕಳುಹಿಸುತ್ತೇವೆ; ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಇದನ್ನು ಆಫ್ ಮಾಡಬಹುದು.",
       ]],
       ["ಯಾರು ನೋಡಬಹುದು", [
         "ನೀವು ಉಳಿಸಿದ ಎಲ್ಲವನ್ನೂ ನೀವು ನೋಡಬಹುದು.",

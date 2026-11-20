@@ -27,6 +27,7 @@ export type Profile = {
   preferred_language: string;
   parent_consent: boolean;
   verified_scout: boolean;
+  email_notifications?: boolean;
 };
 
 export type Submission = {

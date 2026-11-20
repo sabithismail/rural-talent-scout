@@ -11,6 +11,11 @@ export default function Nav() {
   const { t, lang, setLang } = useI18n();
   const { user, profile } = useAuth();
   const [waiting, setWaiting] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.rpc("am_i_admin").then(({ data }) => setIsAdmin(data === true));
+  }, [user]);
 
   useEffect(() => {
     if (!user) { setWaiting(0); return; }
@@ -38,6 +43,7 @@ export default function Nav() {
         <Link href="/about" className="link">{t("about")}</Link>
         {user && profile?.role === "player" && <Link href="/me" className="link">{t("mySubmissions")}</Link>}
         {user && profile?.role === "scout" && <Link href="/scout" className="link">{t("scoutDashboard")}</Link>}
+        {isAdmin && <Link href="/admin" className="link">{t("adminTitle")}</Link>}
         {user && <Link href="/profile" className="link">{t("profile")}</Link>}
         {user ? (
           <button className="link" onClick={() => supabase.auth.signOut()}>{t("logout")}</button>
