@@ -42,6 +42,7 @@ export default function Nav() {
         <Link href="/about#architecture" className="link">{t("architecture")}</Link>
         <Link href="/about" className="link">{t("about")}</Link>
         {user && profile?.role === "player" && <Link href="/me" className="link">{t("mySubmissions")}</Link>}
+        {user && <Link href="/leaderboard" className="link">{t("lbTitle")}</Link>}
         {user && profile?.role === "scout" && <Link href="/scout" className="link">{t("scoutDashboard")}</Link>}
         {isAdmin && <Link href="/admin" className="link">{t("adminTitle")}</Link>}
         {user && <Link href="/profile" className="link">{t("profile")}</Link>}

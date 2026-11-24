@@ -26,6 +26,10 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "Every video starts private. When you switch a scored video to Visible to scouts, verified scouts can watch it and see your email address so they can write to you directly. This needs parent or guardian consent. Switch it back to private at any time.",
         "To save space, when our storage is 70% full we compress, and if needed delete, videos that scored below 70. Videos that scored 70 or more are kept. Your score always stays.",
       ]],
+      ["Leaderboard and video checks", [
+        "If you tick Show me on the leaderboard on Profile, other signed-in users see your first name, district, state, age group and best score. Players under 18 also need parent or guardian consent. Untick it any time.",
+        "For push-ups, sit-ups, pull-ups and skipping, a pose model estimates your reps from the video. If you reported far more than the video shows, the score uses the most the video supports. It never raises a score.",
+      ]],
       ["Players under 18", [
         "Players under 18 need parent or guardian consent on their profile, and must confirm that a parent or guardian knows before preparing a message to a sports body. Age and consent are stated by the player; we do not check them.",
       ]],
@@ -69,6 +73,10 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
         "हर वीडियो पहले निजी रहता है। जब आप स्कोर हुए वीडियो को \"स्काउट्स को दिखाएँ\" पर करते हैं, तो सत्यापित स्काउट्स उसे देख सकते हैं और आपका ईमेल पता देखकर सीधे लिख सकते हैं। इसके लिए माता-पिता या अभिभावक की सहमति ज़रूरी है। कभी भी वापस निजी करें।",
         "जगह बचाने के लिए, स्टोरेज 70% भर जाने पर हम 70 से कम स्कोर वाले वीडियो को छोटा करते हैं और ज़रूरत हो तो हटा देते हैं। 70 या उससे ज़्यादा स्कोर वाले वीडियो रखे जाते हैं। आपका स्कोर हमेशा रहता है।",
       ]],
+      ["लीडरबोर्ड और वीडियो जाँच", [
+        "यदि आप प्रोफ़ाइल में \"मुझे लीडरबोर्ड पर दिखाएँ\" चुनते हैं, तो साइन-इन किए अन्य उपयोगकर्ता आपका पहला नाम, जिला, राज्य, आयु समूह और सबसे अच्छा स्कोर देखते हैं। 18 से कम के खिलाड़ियों के लिए माता-पिता या अभिभावक की सहमति भी ज़रूरी है। कभी भी हटाएँ।",
+        "पुश-अप, सिट-अप, पुल-अप और स्किपिंग के लिए, एक पोज़ मॉडल वीडियो से आपके रेप का अनुमान लगाता है। यदि आपने वीडियो से बहुत ज़्यादा बताया है, तो स्कोर वीडियो से मेल खाते सबसे ज़्यादा पर बनता है। यह स्कोर कभी बढ़ाता नहीं।",
+      ]],
       ["18 साल से कम के खिलाड़ी", [
         "18 साल से कम के खिलाड़ियों की प्रोफ़ाइल में माता-पिता या अभिभावक की सहमति ज़रूरी है, और खेल संस्था के लिए संदेश बनाने से पहले पुष्टि करनी होगी कि उन्हें पता है। उम्र और सहमति खिलाड़ी खुद बताता है; हम इनकी जाँच नहीं करते।",
       ]],
@@ -111,6 +119,10 @@ export const PRIVACY: Record<Lang, PrivacyCopy> = {
       ["ಸಾರ್ವಜನಿಕ ಮತ್ತು ಖಾಸಗಿ ವೀಡಿಯೊಗಳು", [
         "ಪ್ರತಿ ವೀಡಿಯೊ ಮೊದಲು ಖಾಸಗಿ. ಸ್ಕೋರ್ ಆದ ವೀಡಿಯೊವನ್ನು \"ಸ್ಕೌಟ್‌ಗಳಿಗೆ ತೋರಿಸಿ\" ಮಾಡಿದಾಗ, ಪರಿಶೀಲಿತ ಸ್ಕೌಟ್‌ಗಳು ಅದನ್ನು ನೋಡಬಹುದು ಮತ್ತು ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ನೋಡಿ ನೇರವಾಗಿ ಬರೆಯಬಹುದು. ಇದಕ್ಕೆ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆ ಬೇಕು. ಯಾವಾಗ ಬೇಕಾದರೂ ಖಾಸಗಿ ಮಾಡಿ.",
         "ಜಾಗ ಉಳಿಸಲು, ಸಂಗ್ರಹ 70% ತುಂಬಿದಾಗ 70 ಕ್ಕಿಂತ ಕಡಿಮೆ ಸ್ಕೋರ್ ಇರುವ ವೀಡಿಯೊಗಳನ್ನು ಚಿಕ್ಕದು ಮಾಡುತ್ತೇವೆ, ಬೇಕಾದರೆ ಅಳಿಸುತ್ತೇವೆ. 70 ಅಥವಾ ಹೆಚ್ಚು ಸ್ಕೋರ್ ಇರುವವು ಉಳಿಯುತ್ತವೆ. ನಿಮ್ಮ ಸ್ಕೋರ್ ಯಾವಾಗಲೂ ಉಳಿಯುತ್ತದೆ.",
+      ]],
+      ["ಲೀಡರ್‌ಬೋರ್ಡ್ ಮತ್ತು ವೀಡಿಯೊ ಪರಿಶೀಲನೆ", [
+        "ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ \"ನನ್ನನ್ನು ಲೀಡರ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ತೋರಿಸಿ\" ಆಯ್ಕೆ ಮಾಡಿದರೆ, ಸೈನ್ ಇನ್ ಆದ ಇತರ ಬಳಕೆದಾರರು ನಿಮ್ಮ ಮೊದಲ ಹೆಸರು, ಜಿಲ್ಲೆ, ರಾಜ್ಯ, ವಯಸ್ಸಿನ ಗುಂಪು ಮತ್ತು ಅತ್ಯುತ್ತಮ ಸ್ಕೋರ್ ನೋಡುತ್ತಾರೆ. 18 ಕ್ಕಿಂತ ಕಡಿಮೆ ಆಟಗಾರರಿಗೆ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆಯೂ ಬೇಕು. ಯಾವಾಗ ಬೇಕಾದರೂ ತೆಗೆಯಿರಿ.",
+        "ಪುಶ್-ಅಪ್, ಸಿಟ್-ಅಪ್, ಪುಲ್-ಅಪ್ ಮತ್ತು ಸ್ಕಿಪ್ಪಿಂಗ್‌ಗೆ, ಪೋಸ್ ಮಾದರಿ ವೀಡಿಯೊದಿಂದ ನಿಮ್ಮ ರೆಪ್‌ಗಳನ್ನು ಅಂದಾಜು ಮಾಡುತ್ತದೆ. ನೀವು ವೀಡಿಯೊಗಿಂತ ತುಂಬಾ ಹೆಚ್ಚು ತಿಳಿಸಿದರೆ, ಸ್ಕೋರ್ ವೀಡಿಯೊ ಬೆಂಬಲಿಸುವ ಗರಿಷ್ಠವನ್ನು ಬಳಸುತ್ತದೆ. ಇದು ಸ್ಕೋರ್ ಅನ್ನು ಎಂದಿಗೂ ಹೆಚ್ಚಿಸುವುದಿಲ್ಲ.",
       ]],
       ["18 ವರ್ಷಕ್ಕಿಂತ ಕಡಿಮೆ ಆಟಗಾರರು", [
         "18 ವರ್ಷಕ್ಕಿಂತ ಕಡಿಮೆ ಆಟಗಾರರ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪೋಷಕರ ಅಥವಾ ಪಾಲಕರ ಒಪ್ಪಿಗೆ ಬೇಕು, ಮತ್ತು ಕ್ರೀಡಾ ಸಂಸ್ಥೆಗೆ ಸಂದೇಶ ಸಿದ್ಧಪಡಿಸುವ ಮೊದಲು ಅವರಿಗೆ ತಿಳಿದಿದೆ ಎಂದು ದೃಢೀಕರಿಸಬೇಕು. ವಯಸ್ಸು ಮತ್ತು ಒಪ್ಪಿಗೆಯನ್ನು ಆಟಗಾರರೇ ಹೇಳುತ್ತಾರೆ; ನಾವು ಅವನ್ನು ಪರಿಶೀಲಿಸುವುದಿಲ್ಲ.",

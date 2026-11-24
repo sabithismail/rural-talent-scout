@@ -28,6 +28,7 @@ export type Profile = {
   parent_consent: boolean;
   verified_scout: boolean;
   email_notifications?: boolean;
+  show_on_leaderboard?: boolean;
 };
 
 export type Submission = {
@@ -42,6 +43,7 @@ export type Submission = {
   score: number | null;
   created_at: string;
   visibility?: "public" | "private";
+  pose?: { est?: number; detected?: number; reported?: number; adjusted_to?: number | null; error?: string } | null;
   video_deleted_at?: string | null;
   sports?: Pick<Sport, "name" | "slug" | "metric_label" | "metric_unit"> | null;
   profiles?: Pick<Profile, "full_name" | "age" | "village" | "district" | "state"> | null;

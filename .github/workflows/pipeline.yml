@@ -44,7 +44,10 @@ jobs:
           cache-dependency-path: video-checker/requirements.txt
 
       - name: Install checker
-        run: pip install -r video-checker/requirements.txt
+        run: |
+          pip install -r video-checker/requirements.txt
+          # pose cross-check is optional: if this install fails the pipeline still works without it
+          pip install -r video-checker/requirements-pose.txt || echo "::warning::MediaPipe not installed, pose check skipped"
 
       - name: Check new videos
         working-directory: video-checker

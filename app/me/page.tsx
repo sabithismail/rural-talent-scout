@@ -19,7 +19,7 @@ export default function MySubmissions() {
     if (!user) return;
     supabase
       .from("submissions")
-      .select("id, player_id, visibility, video_deleted_at, sport_id, video_path, notes, status, metric_value, score, analysis, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit)")
+      .select("id, player_id, visibility, video_deleted_at, sport_id, video_path, notes, status, metric_value, score, analysis, pose, created_at, reported_value, video_hash, sports(name, slug, metric_label, metric_unit)")
       .eq("player_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => setRows((data as unknown as Submission[]) ?? []));
@@ -92,6 +92,12 @@ export default function MySubmissions() {
             </p>
           )}
           {r.notes && <p>{r.notes}</p>}
+          {r.pose && !r.pose.error && r.pose.est != null && r.pose.est >= 3 && (r.pose.detected ?? 0) >= 0.7 && (
+            <p className="muted">
+              {t("poseCounted").replace("{n}", String(r.pose.est))}
+              {r.pose.adjusted_to != null && <> {t("poseAdjusted").replace("{r}", String(Math.round(r.pose.reported ?? 0))).replace("{a}", String(Math.round(r.pose.adjusted_to)))}</>}
+            </p>
+          )}
           {r.video_deleted_at && <p className="muted">{t("videoRemoved")}</p>}
           {r.status === "scored" && !r.video_deleted_at && (
             <>

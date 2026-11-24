@@ -38,6 +38,19 @@ jobs:
           fi
           exit $rc
 
+  pose-smoke:
+    # Optional check that the MediaPipe pose model loads and finds people. Never fails the build.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt -r requirements-pose.txt
+        working-directory: video-checker
+      - run: python scripts/pose_smoke.py
+        working-directory: video-checker
+
   site:
     runs-on: ubuntu-latest
     steps:

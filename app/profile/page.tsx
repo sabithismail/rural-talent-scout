@@ -15,6 +15,7 @@ export default function ProfilePage() {
     full_name: "", age: "", gender: "", village: "", district: "", state: "", school_or_club: "", parent_consent: false,
   });
   const [emailNotif, setEmailNotif] = useState(true);
+  const [onBoard, setOnBoard] = useState(false);
   const [msg, setMsg] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [cur, setCur] = useState("");
   const [nw, setNw] = useState("");
@@ -40,6 +41,7 @@ export default function ProfilePage() {
       parent_consent: profile.parent_consent,
     });
     setEmailNotif(profile.email_notifications !== false);
+    setOnBoard(profile.show_on_leaderboard === true);
   }, [profile]);
 
   if (!loading && !user) return <p>{t("needLogin")} <Link href="/login">{t("login")}</Link></p>;
@@ -62,6 +64,7 @@ export default function ProfilePage() {
         school_or_club: f.school_or_club || null,
         parent_consent: f.parent_consent,
         email_notifications: emailNotif,
+        show_on_leaderboard: onBoard,
       })
       .eq("id", user!.id);
     if (error) setMsg({ kind: "error", text: error.message });
@@ -159,6 +162,12 @@ export default function ProfilePage() {
           <label className="check" style={{ marginTop: 18 }}>
             <input type="checkbox" checked={f.parent_consent} onChange={(e) => set("parent_consent", e.target.checked)} />
             <span>{t("consent")}</span>
+          </label>
+        )}
+        {isPlayer && (
+          <label className="check" style={{ marginTop: 18 }}>
+            <input type="checkbox" checked={onBoard} onChange={(e) => setOnBoard(e.target.checked)} />
+            <span>{t("lbShow")}</span>
           </label>
         )}
         <label className="check" style={{ marginTop: 18 }}>

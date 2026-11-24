@@ -11,6 +11,7 @@ import time
 
 import httpx
 
+from . import pose as posemod
 from .checks import Limits, check_video, sha256_file
 
 BASE = os.environ.get("SUPABASE_URL", "").rstrip("/")
@@ -21,7 +22,7 @@ HEADERS = {"apikey": KEY, "Authorization": f"Bearer {KEY}"}
 def pending(client: httpx.Client) -> list[dict]:
     r = client.get(
         f"{BASE}/rest/v1/submissions",
-        params={"status": "eq.pending", "select": "id,player_id,video_path,created_at,sports(max_clip_seconds)", "order": "created_at.asc", "limit": "20"},
+        params={"status": "eq.pending", "select": "id,player_id,video_path,created_at,reported_value,sports(slug,max_clip_seconds)", "order": "created_at.asc", "limit": "20"},
         headers=HEADERS,
     )
     r.raise_for_status()
@@ -59,6 +60,9 @@ def process(client: httpx.Client, row: dict) -> str:
         download(client, row["video_path"], path)
         digest = sha256_file(path)
         result = check_video(path, Limits(max_seconds=max_seconds))
+        pose_info = None
+        if result.valid:  # rep-count cross-check; never raises, may lower an over-claimed count
+            pose_info = posemod.analyse((row.get("sports") or {}).get("slug", ""), path, row.get("reported_value"))
 
     reasons = list(result.reasons)
     if result.valid and is_duplicate(client, row["id"], digest):
@@ -68,7 +72,12 @@ def process(client: httpx.Client, row: dict) -> str:
     if reasons:
         patch(client, row["id"], {"status": "rejected", "video_hash": digest, "analysis": analysis})
         return "rejected"
-    patch(client, row["id"], {"status": "validated", "video_hash": digest, "analysis": analysis})
+    body = {"status": "validated", "video_hash": digest, "analysis": analysis}
+    if pose_info:
+        body["pose"] = pose_info
+        if pose_info.get("adjusted_to") is not None:
+            body["reported_value"] = pose_info["adjusted_to"]
+    patch(client, row["id"], body)
     return "validated"
 
 
